@@ -2,12 +2,13 @@
 """
 Encrypted DNS Dataset — Backend API
 =====================================
-FastAPI server with SQLite persistence.
+FastAPI server with SQLite persistence and Machine Learning engine.
 
 Database: dataset.db (SQLite, auto-created on startup)
-Tables  : One table per dataset file loaded.
+Tables  : Canonical dataset tables (dataset, packets, flows, etc.)
 
 Endpoints:
+  GET    /api/status                        — Health check & database stats
   GET    /api/tables                        — List all tables & row counts
   GET    /api/tables/{table}/rows           — Get paginated/filtered rows
   POST   /api/tables/{table}/rows           — Append a new row
@@ -15,19 +16,24 @@ Endpoints:
   DELETE /api/tables/{table}/rows/{rowid}   — Delete a row by rowid
   POST   /api/tables/upload                 — Upload a CSV to create/append a table
   GET    /api/tables/{table}/export         — Export table as CSV download
+  GET    /api/models/available              — List supported ML models & feature tables
+  POST   /api/models/train                  — Train & evaluate a model (Random Forest / XGBoost)
+  POST   /api/models/compare                — Head-to-head comparison
+  POST   /api/models/pipeline               — Train -> Validate -> Test pipeline runner
 
 Usage:
-  python backend/server.py
-  # → http://localhost:8000/api/...
-  # → http://localhost:8000/docs
+  python server.py               # From backend/
+  npm run dev                    # From backend/
+  npm run backend                # From root
 """
 
 import csv
 import io
 import os
 import sqlite3
+import sys
 import time
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -44,21 +50,33 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from xgboost import XGBClassifier
 
 # ---------------------------------------------------------------------------
-# Config
+# Config & Paths
 # ---------------------------------------------------------------------------
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATASET_DIR  = PROJECT_ROOT / "dataset"
-DB_PATH      = PROJECT_ROOT / "backend" / "dataset.db"
+PROJECT_ROOT      = Path(__file__).resolve().parent.parent
+DATASET_DIR       = PROJECT_ROOT / "dataset"
+FRONTEND_DATA_DIR = PROJECT_ROOT / "frontend" / "public" / "data"
+DB_PATH           = PROJECT_ROOT / "backend" / "dataset.db"
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Dataset CSV files to seed on startup
 SEED_FILES = [
-    ("dataset", DATASET_DIR / "dataset.csv"),
+    ("dataset",               DATASET_DIR / "dataset.csv"),
+    ("packets",               DATASET_DIR / "packets.csv"),
+    ("flows",                 DATASET_DIR / "flows" / "flows.csv"),
+    ("full_features",         DATASET_DIR / "features" / "full_features.csv"),
+    ("fingerprint_features",  DATASET_DIR / "features" / "fingerprint_features.csv"),
+    ("early_packets",         DATASET_DIR / "features" / "early_packets.csv"),
+    ("metadata_captures",     DATASET_DIR / "metadata" / "captures.csv"),
+    ("metadata_experiments",  DATASET_DIR / "metadata" / "experiments.csv"),
+    ("metadata_networks",     DATASET_DIR / "metadata" / "networks.csv"),
+    ("splits_train",          DATASET_DIR / "splits" / "train.csv"),
+    ("splits_validation",     DATASET_DIR / "splits" / "validation.csv"),
+    ("splits_test",           DATASET_DIR / "splits" / "test.csv"),
 ]
 
 # ---------------------------------------------------------------------------
-# Database helpers
+# Database Helpers
 # ---------------------------------------------------------------------------
 
 @contextmanager
@@ -75,7 +93,18 @@ def get_db():
 
 def _safe_table_name(name: str) -> str:
     """Sanitize table name to prevent SQL injection."""
-    return "".join(c if c.isalnum() or c == "_" else "_" for c in name.lower())
+    clean = "".join(c if c.isalnum() or c == "_" else "_" for c in name.strip().lower())
+    while "__" in clean:
+        clean = clean.replace("__", "_")
+    return clean.strip("_") or "dataset"
+
+
+def _safe_col_name(name: str) -> str:
+    """Sanitize column name to standard SQL-safe snake_case."""
+    clean = "".join(c if c.isalnum() or c == "_" else "_" for c in name.strip().lower())
+    while "__" in clean:
+        clean = clean.replace("__", "_")
+    return clean.strip("_") or "col"
 
 
 def _infer_column_type(series: pd.Series) -> str:
@@ -86,18 +115,18 @@ def _infer_column_type(series: pd.Series) -> str:
     return "TEXT"
 
 
-def _clean_column_name(name: str) -> str:
-    """Clean column name preserving spaces and casing."""
-    return name.strip().replace('"', "")
+def seed_table(conn: sqlite3.Connection, table_name: str, csv_path: Path, force_reload: bool = False) -> int:
+    """Create or refresh table from CSV. Return row count loaded."""
+    resolved_path = csv_path
+    if not resolved_path.exists():
+        fallback = FRONTEND_DATA_DIR / csv_path.name
+        if fallback.exists():
+            resolved_path = fallback
+        else:
+            return 0
 
-
-def seed_table(conn: sqlite3.Connection, table_name: str, csv_path: Path) -> int:
-    """Create table from CSV if not exists. Return row count loaded."""
-    if not csv_path.exists():
-        return 0
-
-    df = pd.read_csv(csv_path)
-    df.columns = [_clean_column_name(c) for c in df.columns]
+    df = pd.read_csv(resolved_path)
+    df.columns = [_safe_col_name(c) for c in df.columns]
     df = df.fillna("")
 
     # Check if table already exists
@@ -106,8 +135,12 @@ def seed_table(conn: sqlite3.Connection, table_name: str, csv_path: Path) -> int
         (table_name,),
     ).fetchone()
 
-    if existing:
-        return conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]  # noqa: S608
+    if existing and not force_reload:
+        current_count = conn.execute(f'SELECT COUNT(*) FROM "{table_name}"').fetchone()[0]
+        if current_count == len(df) and current_count > 0:
+            return current_count
+        # Count mismatch with updated canonical file: drop and refresh
+        conn.execute(f'DROP TABLE "{table_name}"')
 
     # Build CREATE TABLE statement
     col_defs = ["_rowid_ INTEGER PRIMARY KEY AUTOINCREMENT"]
@@ -138,41 +171,43 @@ def seed_database():
             if count > 0:
                 print(f"  ✓ {safe_name:<30} {count:>6} rows")
             else:
-                print(f"  ⚠ {safe_name:<30} CSV not found, skipping")
+                # Silent skip for non-existent legacy sub-files
+                pass
 
 
 # ---------------------------------------------------------------------------
-# FastAPI App
+# FastAPI Application & Lifespan
 # ---------------------------------------------------------------------------
 
-app = FastAPI(
-    title="Encrypted DNS Dataset API",
-    description="SQLite-backed REST API for the Encrypted DNS Traffic Fingerprinting Dataset",
-    version="1.0.0",
-    docs_url="/docs",
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Vite dev server
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# ---------------------------------------------------------------------------
-# Routes
-# ---------------------------------------------------------------------------
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     print(f"\n{'='*55}")
     print(f"  Encrypted DNS Dataset Backend  →  SQLite: {DB_PATH.name}")
     print(f"{'='*55}")
     print("  Seeding canonical datasets...")
     seed_database()
     print(f"{'='*55}\n")
+    yield
 
+app = FastAPI(
+    title="Encrypted DNS Dataset API",
+    description="SQLite-backed REST API for the Encrypted DNS Traffic Fingerprinting Dataset",
+    version="1.0.0",
+    docs_url="/docs",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ---------------------------------------------------------------------------
+# System & Table Management Routes
+# ---------------------------------------------------------------------------
 
 @app.get("/api/status", summary="Get database health and info")
 def get_status():
@@ -203,7 +238,7 @@ def list_tables():
         result = []
         for row in tables:
             name = row["name"]
-            count = conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]  # noqa: S608
+            count = conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]
             pragma = conn.execute(f'PRAGMA table_info("{name}")').fetchall()
             cols = [
                 r[1] for r in pragma
@@ -227,31 +262,28 @@ def get_rows(
 ):
     safe = _safe_table_name(table)
     with get_db() as conn:
-        # Verify table exists
         exists = conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name=?", (safe,)
         ).fetchone()
         if not exists:
             raise HTTPException(status_code=404, detail=f"Table '{safe}' not found")
 
-        # Get columns
         pragma = conn.execute(f'PRAGMA table_info("{safe}")').fetchall()
         cols = [r[1] for r in pragma if r[1] != "_rowid_"]
 
-        # Build WHERE clause for search
         offset = (page - 1) * per_page
-        if search.strip():
+        if cols and search.strip():
             where_clauses = [f'CAST("{c}" AS TEXT) LIKE ?' for c in cols]
             where_sql = " OR ".join(where_clauses)
-            params_filter = [f"%{search}%"] * len(cols)
-            count_sql = f'SELECT COUNT(*) FROM "{safe}" WHERE {where_sql}'  # noqa: S608
-            rows_sql  = f'SELECT _rowid_, * FROM "{safe}" WHERE {where_sql} LIMIT ? OFFSET ?'  # noqa: S608
+            params_filter = [f"%{search.strip()}%"] * len(cols)
+            count_sql = f'SELECT COUNT(*) FROM "{safe}" WHERE {where_sql}'
+            rows_sql  = f'SELECT _rowid_, * FROM "{safe}" WHERE {where_sql} LIMIT ? OFFSET ?'
             total = conn.execute(count_sql, params_filter).fetchone()[0]
             rows  = conn.execute(rows_sql, params_filter + [per_page, offset]).fetchall()
         else:
-            total = conn.execute(f'SELECT COUNT(*) FROM "{safe}"').fetchone()[0]  # noqa: S608
+            total = conn.execute(f'SELECT COUNT(*) FROM "{safe}"').fetchone()[0]
             rows  = conn.execute(
-                f'SELECT _rowid_, * FROM "{safe}" LIMIT ? OFFSET ?', (per_page, offset)  # noqa: S608
+                f'SELECT _rowid_, * FROM "{safe}" LIMIT ? OFFSET ?', (per_page, offset)
             ).fetchall()
 
         return {
@@ -277,19 +309,26 @@ def add_row(table: str, payload: dict[str, Any]):
         pragma = conn.execute(f'PRAGMA table_info("{safe}")').fetchall()
         cols = [r[1] for r in pragma if r[1] != "_rowid_"]
 
-        valid = {k: payload[k] for k in payload if k in cols}
+        # Support matching case-insensitively or snake_cased
+        col_map = {c.lower(): c for c in cols}
+        valid = {}
+        for k, v in payload.items():
+            k_clean = _safe_col_name(k)
+            if k_clean in col_map:
+                valid[col_map[k_clean]] = v
+
         if not valid:
             raise HTTPException(status_code=422, detail="No valid columns provided")
 
         col_str = ", ".join(f'"{c}"' for c in valid)
         placeholders = ", ".join(["?"] * len(valid))
         cursor = conn.execute(
-            f'INSERT INTO "{safe}" ({col_str}) VALUES ({placeholders})',  # noqa: S608
+            f'INSERT INTO "{safe}" ({col_str}) VALUES ({placeholders})',
             list(valid.values()),
         )
         new_rowid = cursor.lastrowid
         new_row = conn.execute(
-            f'SELECT _rowid_, * FROM "{safe}" WHERE _rowid_=?', (new_rowid,)  # noqa: S608
+            f'SELECT _rowid_, * FROM "{safe}" WHERE _rowid_=?', (new_rowid,)
         ).fetchone()
         return {"inserted": True, "row": dict(new_row)}
 
@@ -306,18 +345,24 @@ def update_row(table: str, rowid: int, payload: dict[str, Any]):
 
         pragma = conn.execute(f'PRAGMA table_info("{safe}")').fetchall()
         cols = [r[1] for r in pragma if r[1] != "_rowid_"]
-        valid = {k: payload[k] for k in payload if k in cols}
+
+        col_map = {c.lower(): c for c in cols}
+        valid = {}
+        for k, v in payload.items():
+            k_clean = _safe_col_name(k)
+            if k_clean in col_map:
+                valid[col_map[k_clean]] = v
 
         if not valid:
             raise HTTPException(status_code=422, detail="No valid columns provided")
 
         set_clause = ", ".join(f'"{c}" = ?' for c in valid)
         conn.execute(
-            f'UPDATE "{safe}" SET {set_clause} WHERE _rowid_ = ?',  # noqa: S608
+            f'UPDATE "{safe}" SET {set_clause} WHERE _rowid_ = ?',
             [*valid.values(), rowid],
         )
         updated_row = conn.execute(
-            f'SELECT _rowid_, * FROM "{safe}" WHERE _rowid_=?', (rowid,)  # noqa: S608
+            f'SELECT _rowid_, * FROM "{safe}" WHERE _rowid_=?', (rowid,)
         ).fetchone()
         if not updated_row:
             raise HTTPException(status_code=404, detail=f"Row {rowid} not found")
@@ -334,7 +379,7 @@ def delete_row(table: str, rowid: int):
         if not exists:
             raise HTTPException(status_code=404, detail=f"Table '{safe}' not found")
 
-        result = conn.execute(f'DELETE FROM "{safe}" WHERE _rowid_=?', (rowid,))  # noqa: S608
+        result = conn.execute(f'DELETE FROM "{safe}" WHERE _rowid_=?', (rowid,))
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail=f"Row {rowid} not found")
         return {"deleted": True, "rowid": rowid}
@@ -345,11 +390,11 @@ async def upload_csv(
     file: UploadFile = File(...),
     table_name: str = Query(default=""),
 ):
-    if not file.filename.endswith(".csv"):
+    if not (file.filename and file.filename.lower().endswith(".csv")):
         raise HTTPException(status_code=422, detail="Only CSV files are accepted")
 
     content = await file.read()
-    decoded = content.decode("utf-8-sig")
+    decoded = content.decode("utf-8-sig", errors="replace")
     reader = csv.DictReader(io.StringIO(decoded))
     headers = reader.fieldnames
     if not headers:
@@ -363,9 +408,13 @@ async def upload_csv(
 
     with get_db() as conn:
         df = pd.DataFrame(rows_data)
-        df.columns = [_safe_table_name(c) for c in df.columns]
+        df.columns = [_safe_col_name(c) for c in df.columns]
 
-        # Create table if not exists
+        # Infer numeric types for clean database storage
+        for c in df.columns:
+            converted = pd.to_numeric(df[c], errors="ignore")
+            df[c] = converted
+
         existing = conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name=?", (safe_table,)
         ).fetchone()
@@ -373,20 +422,20 @@ async def upload_csv(
         if not existing:
             col_defs = ["_rowid_ INTEGER PRIMARY KEY AUTOINCREMENT"]
             for col in df.columns:
-                col_defs.append(f'"{col}" TEXT')
+                dtype = _infer_column_type(df[col])
+                col_defs.append(f'"{col}" {dtype}')
             conn.execute(f'CREATE TABLE "{safe_table}" ({", ".join(col_defs)})')
 
-        # Insert rows
         safe_cols = list(df.columns)
         col_str = ", ".join(f'"{c}"' for c in safe_cols)
         placeholders = ", ".join(["?"] * len(safe_cols))
         for _, row in df.iterrows():
             conn.execute(
-                f'INSERT INTO "{safe_table}" ({col_str}) VALUES ({placeholders})',  # noqa: S608
+                f'INSERT INTO "{safe_table}" ({col_str}) VALUES ({placeholders})',
                 [row[c] for c in safe_cols],
             )
 
-        total = conn.execute(f'SELECT COUNT(*) FROM "{safe_table}"').fetchone()[0]  # noqa: S608
+        total = conn.execute(f'SELECT COUNT(*) FROM "{safe_table}"').fetchone()[0]
 
     return {
         "table": safe_table,
@@ -409,9 +458,7 @@ def export_table(table: str):
         pragma = conn.execute(f'PRAGMA table_info("{safe}")').fetchall()
         cols = [r[1] for r in pragma if r[1] != "_rowid_"]
         col_select = ", ".join(f'"{c}"' for c in cols)
-        rows = conn.execute(
-            f'SELECT {col_select} FROM "{safe}"'
-        ).fetchall()
+        rows = conn.execute(f'SELECT {col_select} FROM "{safe}"').fetchall()
 
     buf = io.StringIO()
     writer = csv.writer(buf)
@@ -428,7 +475,7 @@ def export_table(table: str):
 
 
 # ---------------------------------------------------------------------------
-# Machine Learning Models Engine
+# Machine Learning Engine
 # ---------------------------------------------------------------------------
 
 SUPPORTED_MODELS = [
@@ -436,16 +483,18 @@ SUPPORTED_MODELS = [
     "XGBoost",
 ]
 
+CANONICAL_CLASSES = ["DOH", "DOH3", "DOQ", "HTTP3_WEB", "HTTPS_WEB"]
+
 
 class TrainModelRequest(BaseModel):
     model_name: str = Field(default="Random Forest")
-    table_name: str = Field(default="dataset")
+    table_name: str = Field(default="packets")
     test_size: float = Field(default=0.3, ge=0.1, le=0.5)
     random_state: int = Field(default=42)
 
 
 class CompareModelsRequest(BaseModel):
-    table_name: str = Field(default="dataset")
+    table_name: str = Field(default="packets")
     models: list[str] = Field(default_factory=lambda: SUPPORTED_MODELS)
     test_size: float = Field(default=0.3, ge=0.1, le=0.5)
     random_state: int = Field(default=42)
@@ -453,7 +502,7 @@ class CompareModelsRequest(BaseModel):
 
 class PipelineRequest(BaseModel):
     model_name: str = Field(default="Random Forest")
-    table_name: str = Field(default="dataset")
+    table_name: str = Field(default="packets")
     phase: str = Field(default="train")  # 'train' | 'validate' | 'test'
     random_state: int = Field(default=42)
 
@@ -486,7 +535,7 @@ def load_feature_matrix(conn: sqlite3.Connection, table_name: str):
             break
 
     if not target_col:
-        raise HTTPException(status_code=400, detail=f"No target classification column in '{safe}'")
+        raise HTTPException(status_code=400, detail=f"No target classification column found in '{safe}'")
 
     y = df[target_col].astype(str)
 
@@ -504,6 +553,13 @@ def load_feature_matrix(conn: sqlite3.Connection, table_name: str):
         df["proto_num"] = df["transport_protocol"].map(lambda p: 1 if "QUIC" in str(p).upper() else 0)
         exclude.add("transport_protocol")
 
+    # Clean and convert numeric-like columns
+    for c in df.columns:
+        if c not in exclude and not pd.api.types.is_numeric_dtype(df[c]):
+            num_c = pd.to_numeric(df[c], errors="coerce")
+            if num_c.notna().sum() > 0.5 * len(df):
+                df[c] = num_c
+
     feature_cols = [
         c for c in df.columns
         if c not in exclude and pd.api.types.is_numeric_dtype(df[c])
@@ -512,7 +568,7 @@ def load_feature_matrix(conn: sqlite3.Connection, table_name: str):
     if not feature_cols:
         raise HTTPException(status_code=400, detail=f"No numeric features found in table '{safe}'")
 
-    X = df[feature_cols].fillna(0)
+    X = df[feature_cols].replace([np.inf, -np.inf], np.nan).fillna(0)
     return X, y, feature_cols
 
 
@@ -529,8 +585,8 @@ def list_available_models():
 
     return {
         "models": SUPPORTED_MODELS,
-        "recommended_tables": feature_tables or ["dataset"],
-        "classes": ["DOQ", "DOH3", "DOH", "HTTP3_WEB", "HTTPS_WEB"],
+        "recommended_tables": feature_tables or ["dataset", "packets", "early_packets"],
+        "classes": CANONICAL_CLASSES,
     }
 
 
@@ -539,34 +595,40 @@ def train_model(req: TrainModelRequest):
     with get_db() as conn:
         X, y, feature_cols = load_feature_matrix(conn, req.table_name)
 
-    # Check minimum class distribution
+    # Check class distribution and stratifiability
     class_counts = y.value_counts()
-    can_stratify = class_counts.min() >= 2
+    n_classes = len(class_counts)
+    can_stratify = (class_counts.min() >= 2) and (int(len(X) * req.test_size) >= n_classes)
 
-    # Split
-    if len(X) >= 4:
+    # Perform split
+    if len(X) >= 6 and can_stratify:
         X_train, X_test, y_train, y_test = train_test_split(
             X, y,
             test_size=req.test_size,
             random_state=req.random_state,
-            stratify=y if can_stratify else None,
+            stratify=y,
+        )
+    elif len(X) >= 4:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y,
+            test_size=req.test_size,
+            random_state=req.random_state,
+            shuffle=True,
         )
     else:
         X_train, X_test, y_train, y_test = X, X, y, y
 
-    # Label encoding
-    classes = sorted(list(set(y_train.unique()).union(set(y_test.unique()))))
-    le = LabelEncoder()
-    le.fit(classes)
-    y_train_enc = le.transform(y_train)
-    y_test_enc = le.transform(y_test)
+    # Label encoding: Fit on y_train so classes are ALWAYS contiguous 0..K-1 for XGBoost
+    all_classes = sorted(list(set(y_train.unique()) | set(y_test.unique())))
+    le_train = LabelEncoder()
+    y_train_enc = le_train.fit_transform(y_train)
 
-    # Scale
+    # Scale features
     scaler = StandardScaler()
     X_train_s = scaler.fit_transform(X_train)
     X_test_s = scaler.transform(X_test)
 
-    # Train
+    # Train model
     model = get_classifier_instance(req.model_name)
     t0 = time.perf_counter()
     model.fit(X_train_s, y_train_enc)
@@ -574,16 +636,15 @@ def train_model(req: TrainModelRequest):
 
     # Predict & Evaluate
     preds_enc = model.predict(X_test_s)
-    preds = le.inverse_transform(preds_enc)
+    preds = le_train.inverse_transform(preds_enc)
 
     acc = float(accuracy_score(y_test, preds))
     prec = float(precision_score(y_test, preds, average="macro", zero_division=0))
     rec = float(recall_score(y_test, preds, average="macro", zero_division=0))
     f1 = float(f1_score(y_test, preds, average="macro", zero_division=0))
+    cm = confusion_matrix(y_test, preds, labels=all_classes).tolist()
 
-    cm = confusion_matrix(y_test, preds, labels=classes).tolist()
-
-    # Feature importances if available
+    # Feature importances
     feature_importances = []
     if hasattr(model, "feature_importances_"):
         imps = model.feature_importances_
@@ -593,8 +654,6 @@ def train_model(req: TrainModelRequest):
                 "feature": feature_cols[idx],
                 "importance": round(float(imps[idx]), 4),
             })
-
-    category = "Classifier"
 
     metrics_dict = {
         "accuracy": round(acc, 4),
@@ -608,18 +667,18 @@ def train_model(req: TrainModelRequest):
 
     cm_dict = {
         "matrix": cm,
-        "classes": classes,
+        "classes": all_classes,
     }
 
     return {
         "model_name": req.model_name,
-        "category": category,
+        "category": "Classifier",
         "table_name": req.table_name,
         "train_samples": len(X_train),
         "test_samples": len(X_test),
         "feature_count": len(feature_cols),
         "features": feature_cols,
-        "classes": classes,
+        "classes": all_classes,
         "accuracy": round(acc, 4),
         "precision": round(prec, 4),
         "recall": round(rec, 4),
@@ -631,7 +690,7 @@ def train_model(req: TrainModelRequest):
             "train_samples": len(X_train),
             "test_samples": len(X_test),
             "features_used": len(feature_cols),
-            "classes": classes,
+            "classes": all_classes,
         },
         "feature_importances": feature_importances,
     }
@@ -644,19 +703,21 @@ def compare_models(req: CompareModelsRequest):
 
     class_counts = y.value_counts()
     n_classes = len(class_counts)
-    can_stratify = class_counts.min() >= 2
-    if can_stratify and len(X) >= 2 * n_classes and (int(len(X) * req.test_size) < n_classes):
-        test_size = n_classes
-    else:
-        test_size = req.test_size
-        can_stratify = can_stratify and (int(len(X) * req.test_size) >= n_classes)
+    can_stratify = (class_counts.min() >= 2) and (int(len(X) * req.test_size) >= n_classes)
 
-    if len(X) >= 4:
+    if len(X) >= 6 and can_stratify:
         X_train, X_test, y_train, y_test = train_test_split(
             X, y,
-            test_size=test_size,
+            test_size=req.test_size,
             random_state=req.random_state,
-            stratify=y if can_stratify else None,
+            stratify=y,
+        )
+    elif len(X) >= 4:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y,
+            test_size=req.test_size,
+            random_state=req.random_state,
+            shuffle=True,
         )
     else:
         X_train, X_test, y_train, y_test = X, X, y, y
@@ -665,11 +726,9 @@ def compare_models(req: CompareModelsRequest):
     X_train_s = scaler.fit_transform(X_train)
     X_test_s = scaler.transform(X_test)
 
-    classes = sorted(list(set(y_train.unique()).union(set(y_test.unique()))))
-    le = LabelEncoder()
-    le.fit(classes)
-    y_train_enc = le.transform(y_train)
-    y_test_enc = le.transform(y_test)
+    all_classes = sorted(list(set(y_train.unique()) | set(y_test.unique())))
+    le_train = LabelEncoder()
+    y_train_enc = le_train.fit_transform(y_train)
 
     results = []
     models_to_run = req.models or SUPPORTED_MODELS
@@ -680,14 +739,15 @@ def compare_models(req: CompareModelsRequest):
             t0 = time.perf_counter()
             clf.fit(X_train_s, y_train_enc)
             train_time_ms = round((time.perf_counter() - t0) * 1000, 2)
+
             preds_enc = clf.predict(X_test_s)
-            preds = le.inverse_transform(preds_enc)
+            preds = le_train.inverse_transform(preds_enc)
 
             acc = float(accuracy_score(y_test, preds))
             prec = float(precision_score(y_test, preds, average="macro", zero_division=0))
             rec = float(recall_score(y_test, preds, average="macro", zero_division=0))
             f1 = float(f1_score(y_test, preds, average="macro", zero_division=0))
-            cm = confusion_matrix(y_test, preds, labels=classes).tolist()
+            cm = confusion_matrix(y_test, preds, labels=all_classes).tolist()
 
             feature_importances = []
             if hasattr(clf, "feature_importances_"):
@@ -711,7 +771,7 @@ def compare_models(req: CompareModelsRequest):
 
             cm_dict = {
                 "matrix": cm,
-                "classes": classes,
+                "classes": all_classes,
             }
 
             results.append({
@@ -724,7 +784,7 @@ def compare_models(req: CompareModelsRequest):
                 "training_time_ms": train_time_ms,
                 "metrics": metrics_dict,
                 "confusion_matrix": cm_dict,
-                "classes": classes,
+                "classes": all_classes,
                 "feature_importances": feature_importances,
             })
         except Exception as e:
@@ -732,6 +792,10 @@ def compare_models(req: CompareModelsRequest):
                 "model_name": m_name,
                 "category": "Classifier",
                 "error": str(e),
+                "accuracy": 0.0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
             })
 
     results.sort(key=lambda r: r.get("accuracy", 0), reverse=True)
@@ -741,22 +805,14 @@ def compare_models(req: CompareModelsRequest):
         "train_samples": len(X_train),
         "test_samples": len(X_test),
         "feature_count": len(feature_cols),
-        "classes": classes,
+        "classes": all_classes,
         "results": results,
     }
 
 
 @app.post("/api/models/pipeline", summary="Run a Train → Validate → Test pipeline phase")
 def run_pipeline(req: PipelineRequest):
-    """Execute a single phase of the ML pipeline.
-
-    - **train**: Fit the model on the training data and evaluate on training set.
-    - **validate**: Fit on training data, evaluate on validation split.
-    - **test**: Fit on training data, evaluate on test split.
-
-    Uses the splits_train / splits_validation / splits_test tables when available,
-    otherwise falls back to the selected table with random splitting.
-    """
+    """Execute a single phase of the ML pipeline (train, validate, or test)."""
     if req.model_name not in SUPPORTED_MODELS:
         raise HTTPException(status_code=400, detail=f"Model must be one of: {SUPPORTED_MODELS}")
 
@@ -783,12 +839,10 @@ def run_pipeline(req: PipelineRequest):
                 use_splits_tables = True
 
         if use_splits_tables:
-            # Load from splits tables
             X_train, y_train, feature_cols = load_feature_matrix(conn, "splits_train")
             X_val, y_val, _ = load_feature_matrix(conn, "splits_validation")
             X_test, y_test, _ = load_feature_matrix(conn, "splits_test")
 
-            # Ensure consistent feature columns
             common_cols = [c for c in feature_cols if c in X_val.columns and c in X_test.columns]
             if not common_cols:
                 raise HTTPException(status_code=400, detail="No common numeric features across splits")
@@ -797,34 +851,23 @@ def run_pipeline(req: PipelineRequest):
             X_test = X_test[common_cols]
             feature_cols = common_cols
         else:
-            # Load from the requested table and create 60/20/20 train/validate/test split
             X_full, y_full, feature_cols = load_feature_matrix(conn, req.table_name)
             class_counts = y_full.value_counts()
             n_classes = len(class_counts)
-            can_stratify = class_counts.min() >= 2
+            can_stratify = (class_counts.min() >= 3) and (int(len(X_full) * 0.2) >= n_classes)
 
             if len(X_full) >= 6:
-                if can_stratify and len(X_full) >= 3 * n_classes:
-                    test_sz = max(n_classes, int(len(X_full) * 0.2))
-                    val_sz = max(n_classes, int(len(X_full) * 0.2))
-                else:
-                    test_sz = 0.2
-                    val_sz = 0.25
-                    can_stratify = can_stratify and (int(len(X_full) * 0.2) >= n_classes)
-
                 X_trainval, X_test, y_trainval, y_test = train_test_split(
                     X_full, y_full,
-                    test_size=test_sz,
+                    test_size=0.2,
                     random_state=req.random_state,
                     stratify=y_full if can_stratify else None,
                 )
                 tv_counts = y_trainval.value_counts()
-                can_strat2 = (tv_counts.min() >= 2) and (
-                    val_sz < len(X_trainval) if isinstance(val_sz, int) else (int(len(X_trainval) * val_sz) >= len(tv_counts))
-                )
+                can_strat2 = (tv_counts.min() >= 2) and (int(len(X_trainval) * 0.25) >= len(tv_counts))
                 X_train, X_val, y_train, y_val = train_test_split(
                     X_trainval, y_trainval,
-                    test_size=val_sz if isinstance(val_sz, int) else 0.25,
+                    test_size=0.25,
                     random_state=req.random_state,
                     stratify=y_trainval if can_strat2 else None,
                 )
@@ -832,24 +875,20 @@ def run_pipeline(req: PipelineRequest):
                 X_train, X_val, X_test = X_full, X_full, X_full
                 y_train, y_val, y_test = y_full, y_full, y_full
 
-    # Target encoding using training classes
     all_classes = sorted(list(set(y_train.unique()) | set(y_val.unique()) | set(y_test.unique())))
-    le = LabelEncoder()
-    y_train_enc = le.fit_transform(y_train)
+    le_train = LabelEncoder()
+    y_train_enc = le_train.fit_transform(y_train)
 
-    # Scale features
     scaler = StandardScaler()
     X_train_s = scaler.fit_transform(X_train)
     X_val_s = scaler.transform(X_val)
     X_test_s = scaler.transform(X_test)
 
-    # Train the model
     clf = get_classifier_instance(req.model_name)
     t0 = time.perf_counter()
     clf.fit(X_train_s, y_train_enc)
     train_time_ms = round((time.perf_counter() - t0) * 1000, 2)
 
-    # Select evaluation set based on phase
     if req.phase == "train":
         X_eval_s, y_eval = X_train_s, y_train
         eval_samples = len(y_train)
@@ -860,9 +899,8 @@ def run_pipeline(req: PipelineRequest):
         X_eval_s, y_eval = X_test_s, y_test
         eval_samples = len(y_test)
 
-    # Predict & Evaluate
     preds_enc = clf.predict(X_eval_s)
-    preds = le.inverse_transform(preds_enc)
+    preds = le_train.inverse_transform(preds_enc)
 
     acc = float(accuracy_score(y_eval, preds))
     prec = float(precision_score(y_eval, preds, average="macro", zero_division=0))
@@ -870,7 +908,6 @@ def run_pipeline(req: PipelineRequest):
     f1 = float(f1_score(y_eval, preds, average="macro", zero_division=0))
     cm = confusion_matrix(y_eval, preds, labels=all_classes).tolist()
 
-    # Feature importances (both RF and XGBoost support this)
     feature_importances = []
     if hasattr(clf, "feature_importances_"):
         imps = clf.feature_importances_
@@ -920,6 +957,9 @@ def run_pipeline(req: PipelineRequest):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    backend_dir = Path(__file__).resolve().parent
+    if str(backend_dir) not in sys.path:
+        sys.path.insert(0, str(backend_dir))
     import uvicorn
     port = int(os.environ.get("PORT", 8001))
-    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run(app, host="0.0.0.0", port=port)

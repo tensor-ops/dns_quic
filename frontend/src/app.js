@@ -23,7 +23,7 @@ const state = {
   dbConnected: false,
   dbInfo: null,
   tables: [],
-  activeTable: 'packets',
+  activeTable: 'dataset',
   allActiveRows: [],        // Cached all rows of active table for visualizations & stats
   activeDataset: {
     name: '',
@@ -40,7 +40,7 @@ const state = {
   isLoading: false,
   modelsState: {
     selectedModel: 'Random Forest',
-    selectedTable: 'packets',
+    selectedTable: 'dataset',
     currentPhase: 'idle', // 'idle' | 'trained' | 'validated' | 'tested'
     trainResult: null,
     validateResult: null,
@@ -257,9 +257,23 @@ async function loadTableList() {
         datasetSelect.appendChild(opt);
       });
 
+      if (modelDatasetSelect) {
+        modelDatasetSelect.innerHTML = '';
+        state.tables.forEach((t) => {
+          const opt = document.createElement('option');
+          opt.value = t.table;
+          opt.textContent = `${t.table} (${t.row_count.toLocaleString()} rows)`;
+          modelDatasetSelect.appendChild(opt);
+        });
+      }
+
       if (state.tables.length > 0) {
-        const initialTable = state.tables.some((t) => t.table === 'packets') ? 'packets' : state.tables[0].table;
+        const initialTable = state.tables.some((t) => t.table === 'dataset') ? 'dataset' : state.tables[0].table;
         datasetSelect.value = initialTable;
+        if (modelDatasetSelect) {
+          modelDatasetSelect.value = initialTable;
+          state.modelsState.selectedTable = initialTable;
+        }
         await selectDatabaseTable(initialTable);
       }
       return;
@@ -276,7 +290,7 @@ async function loadTableList() {
     opt.textContent = `${ds.name} (~${ds.rowsHint} rows)`;
     datasetSelect.appendChild(opt);
   });
-  await loadFallbackDataset('packets');
+  await loadFallbackDataset('dataset');
 }
 
 // ---------------------------------------------------------------------------
@@ -531,7 +545,7 @@ function renderChart2PacketLengthDist(rows) {
   }
 
   // Check if packet_size or length exists
-  const hasLength = rows.some((r) => r.packet_size !== undefined || r.payload_size !== undefined || r.length !== undefined || r.len !== undefined);
+  const hasLength = rows.some((r) => r.current_packet_size !== undefined || r.packet_size !== undefined || r.payload_size !== undefined || r.length !== undefined || r.len !== undefined);
   if (!hasLength) {
     chartLengthDist.innerHTML = '<div class="chart-missing-notice">⚠ Packet length data is not available in this dataset.</div>';
     return;
@@ -547,7 +561,7 @@ function renderChart2PacketLengthDist(rows) {
   ];
 
   rows.forEach((r) => {
-    const sz = Number(r.packet_size ?? r.payload_size ?? r.length ?? r.len);
+    const sz = Number(r.current_packet_size ?? r.packet_size ?? r.payload_size ?? r.length ?? r.len);
     if (!isNaN(sz) && sz >= 0) {
       for (const b of bins) {
         if (sz >= b.min && sz < b.max) {
@@ -597,7 +611,7 @@ function renderChart3TimingProgression(rows) {
     return;
   }
 
-  const hasTiming = rows.some((r) => r.timestamp !== undefined || r.relative_time !== undefined || r.iat !== undefined || r.time !== undefined);
+  const hasTiming = rows.some((r) => r.current_time_gap !== undefined || r.timestamp !== undefined || r.relative_time !== undefined || r.iat !== undefined || r.time !== undefined);
   if (!hasTiming) {
     chartTimingDist.innerHTML = '<div class="chart-missing-notice">⚠ Packet timing data is not available in this dataset.</div>';
     return;
@@ -607,8 +621,8 @@ function renderChart3TimingProgression(rows) {
   const validTiming = rows
     .map((r, i) => ({
       idx: i,
-      t: Number(r.timestamp ?? r.relative_time ?? r.iat ?? i * 0.01),
-      sz: Number(r.packet_size ?? r.length ?? 500),
+      t: Number(r.current_time_gap ?? r.timestamp ?? r.relative_time ?? r.iat ?? i * 0.01),
+      sz: Number(r.current_packet_size ?? r.packet_size ?? r.length ?? 500),
     }))
     .filter((d) => !isNaN(d.t))
     .slice(0, 35);
@@ -1510,7 +1524,7 @@ async function runPipelinePhase(phase) {
   if (state.modelsState.isTraining) return;
 
   const modelName = state.modelsState.selectedModel || 'Random Forest';
-  const tableName = state.modelsState.selectedTable || 'packets';
+  const tableName = state.modelsState.selectedTable || 'dataset';
   const phaseLabel = phase === 'train' ? 'Training' : phase === 'validate' ? 'Validation' : 'Testing';
 
   setPipelineBusy(true, `Running ${phaseLabel} for ${modelName} on ${tableName}...`);
@@ -1613,7 +1627,7 @@ function renderPhaseResultCard(phase, data) {
 async function runCompareModels() {
   if (state.modelsState.isTraining) return;
 
-  const tableName = state.modelsState.selectedTable || 'packets';
+  const tableName = state.modelsState.selectedTable || 'dataset';
 
   setPipelineBusy(true, `Comparing Random Forest vs XGBoost on ${tableName}...`);
 
