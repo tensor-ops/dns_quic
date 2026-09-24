@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encrypted DNS & QUIC Traffic Analyzer</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <span class="logo-dot"></span>
+    </div>
+
+    <!-- Main View Switcher: Dashboard vs Dataset vs Models -->
+    <nav class="view-nav">
+      <button class="nav-view-btn active" id="btn-nav-dashboard" data-view="dashboard">
+        Dashboard
+      </button>
+      <button class="nav-view-btn" id="btn-nav-dataset" data-view="dataset">
+        Dataset & Management
+      </button>
+      <button class="nav-view-btn" id="btn-nav-models" data-view="models">
+        Models & Experiments
+      </button>
+    </nav>
+  </header>
+
+  <main class="main-layout">
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: DASHBOARD                                                   -->
+    <!-- =================================================================== -->
+    <section class="view-section active" id="view-dashboard">
+      <div class="section-intro">
+        <div>
+          <h1 class="view-title">Dashboard Overview</h1>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-dash-jump-dataset">
+          Open Dataset Table →
+        </button>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card" id="kpi-card-total">
+          <div class="kpi-header">
+            <span class="kpi-label">Total Records</span>
+          </div>
+          <div class="kpi-value" id="kpi-total-val">—</div>
+          <div class="kpi-subtext" id="kpi-total-sub">Across active database table</div>
+        </div>
+
+        <div class="kpi-card kpi-doq" id="kpi-card-doq">
+          <div class="kpi-header">
+            <span class="kpi-label">DoQ (DNS over QUIC)</span>
+            <span class="kpi-tag">Port 853</span>
+          </div>
+          <div class="kpi-value" id="kpi-doq-val">—</div>
+          <div class="kpi-subtext" id="kpi-doq-pct">—% of traffic</div>
+        </div>
+
+        <div class="kpi-card kpi-doh3" id="kpi-card-doh3">
+          <div class="kpi-header">
+            <span class="kpi-label">DoH3 (DNS over HTTP/3)</span>
+            <span class="kpi-tag">Port 443</span>
+          </div>
+          <div class="kpi-value" id="kpi-doh3-val">—</div>
+          <div class="kpi-subtext" id="kpi-doh3-pct">—% of traffic</div>
+        </div>
+
+        <div class="kpi-card kpi-doh" id="kpi-card-doh">
+          <div class="kpi-header">
+            <span class="kpi-label">DoH (DNS over HTTPS)</span>
+            <span class="kpi-tag">Port 443</span>
+          </div>
+          <div class="kpi-value" id="kpi-doh-val">—</div>
+          <div class="kpi-subtext" id="kpi-doh-pct">—% of traffic</div>
+        </div>
+
+        <div class="kpi-card kpi-web" id="kpi-card-web">
+          <div class="kpi-header">
+            <span class="kpi-label">Web Traffic (HTTP/3 & HTTPS)</span>
+            <span class="kpi-tag">Background</span>
+          </div>
+          <div class="kpi-value" id="kpi-web-val">—</div>
+          <div class="kpi-subtext" id="kpi-web-pct">—% of traffic</div>
+        </div>
+      </div>
+
+      <!-- Traffic Visualizations in Dashboard -->
+      <section class="visualization-panel">
+        <div class="vis-header">
+          <div class="vis-title-group">
+            <span class="vis-title">Traffic Visualizations</span>
+            <span class="vis-subtitle">Generated dynamically from active table data</span>
+          </div>
+
+          <!-- Visualization Controls -->
+          <div class="vis-controls">
+            <div class="control-group">
+              <label class="control-label" for="filter-traffic-class">Traffic Class:</label>
+              <select id="filter-traffic-class" class="select-input select-sm">
+                <option value="ALL">All Classes</option>
+                <option value="DOQ">DOQ (DNS over QUIC)</option>
+                <option value="DOH3">DOH3 (DNS over HTTP/3)</option>
+                <option value="DOH">DOH (DNS over HTTPS)</option>
+                <option value="HTTP3_WEB">HTTP3_WEB (Web)</option>
+                <option value="HTTPS_WEB">HTTPS_WEB (Web)</option>
+              </select>
+            </div>
+            <button class="btn btn-ghost btn-xs" id="btn-reset-vis-filters">Reset Filters</button>
+          </div>
+        </div>
+
+        <!-- 4-Chart Grid -->
+        <div class="charts-grid">
+          <!-- 1. Protocol / Class Distribution -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-card-title">1. Protocol / Class Distribution</span>
+              <span class="chart-tag">Bar Chart</span>
+            </div>
+            <div class="chart-body" id="chart-protocol-dist">
+              <!-- SVG Bar Chart -->
+            </div>
+          </div>
+
+          <!-- 2. Packet Length Distribution -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-card-title">2. Packet Length Distribution</span>
+              <span class="chart-tag">Histogram</span>
+            </div>
+            <div class="chart-body" id="chart-length-dist">
+              <!-- SVG Histogram -->
+            </div>
+          </div>
+
+          <!-- 3. Packet Arrival Timing -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-card-title">3. Packet Arrival Timing</span>
+              <span class="chart-tag">Line Chart</span>
+            </div>
+            <div class="chart-body" id="chart-timing-dist">
+              <!-- SVG Line Chart -->
+            </div>
+          </div>
+
+          <!-- 4. Direction Distribution -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-card-title">4. Direction Distribution</span>
+              <span class="chart-tag">Direction Ratio</span>
+            </div>
+            <div class="chart-body" id="chart-direction-dist">
+              <!-- SVG Direction Ratio -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: 🗄️ DATASET & MANAGEMENT                                    -->
+    <!-- =================================================================== -->
+    <section class="view-section" id="view-dataset" style="display: none;">
+
+      <!-- Top Action Bar: Upload or Manual Entry Form -->
+      <section class="action-panel">
+        <div class="tabs-header">
+          <div class="tab-btn active" data-tab="upload">Upload CSV</div>
+          <div class="tab-btn" data-tab="manual">Add Row to Active File</div>
+        </div>
+
+        <!-- Tab 1: Upload CSV -->
+        <div class="tab-content active" id="tab-upload">
+          <div class="upload-container">
+            <div class="dropzone" id="csv-dropzone">
+              <span class="drop-icon">☁️</span>
+              <div>
+                <span class="drop-text">Drag & drop CSV file, or </span>
+                <button class="browse-link" id="btn-browse-file">browse</button>
+              </div>
+              <input type="file" id="csv-file-input" accept=".csv" style="display: none;" />
+            </div>
+
+            <div class="upload-info" id="upload-info-box" style="display: none;">
+              <div class="info-tag" id="tag-filename">—</div>
+              <div class="info-tag" id="tag-rows">— rows</div>
+              <div class="info-tag" id="tag-cols">— cols</div>
+              <div class="info-tag" id="tag-missing">0 missing</div>
+              <div style="display: flex; gap: 0.4rem; margin-left: auto;">
+                <button class="btn btn-primary btn-sm" id="btn-save-to-db">Save to SQLite DB</button>
+                <button class="btn btn-secondary btn-sm" id="btn-view-uploaded">Preview Table</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Dynamic Manual Row Entry (Applicable to Any Active File) -->
+        <div class="tab-content" id="tab-manual">
+          <div class="manual-toolbar">
+            <div class="manual-title-desc" id="manual-file-target-desc">
+              Manually enter a new record for the active dataset:
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary btn-sm" id="btn-submit-manual-row">+ Append Row</button>
+              <button class="btn btn-ghost btn-sm" id="btn-reset-manual-form">Reset Form</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Form Generated for the Active File's Columns -->
+          <div class="dynamic-entry-grid" id="dynamic-manual-fields">
+            <!-- Populated dynamically based on active file headers -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Dataset View Section (The Primary Spreadsheet View) -->
+      <section class="dataset-panel">
+        <!-- Toolbar -->
+        <div class="dataset-toolbar">
+          <div class="dataset-meta">
+            <div class="dataset-select-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+              <label for="dataset-select" class="nav-label" style="font-size: 0.8rem; color: var(--text-dim);">Table:</label>
+              <select id="dataset-select" class="select-input" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                <option value="">Loading tables...</option>
+              </select>
+            </div>
+            <span class="dataset-pill" id="active-dataset-dim">251 rows × 13 columns</span>
+            <button class="btn btn-primary btn-xs" id="btn-toggle-inline-add">+ Add Row Directly</button>
+          </div>
+
+          <div class="table-controls">
+            <input type="text" class="search-box" id="table-search-input" placeholder="Filter rows in table..." />
+            
+            <div class="pagination">
+              <span class="page-info" id="pagination-info">1-25 of 251</span>
+              <button class="page-btn" id="btn-prev-page" title="Previous page">‹</button>
+              <button class="page-btn" id="btn-next-page" title="Next page">›</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline Add Row Drawer (collapsible) -->
+        <div class="inline-add-drawer" id="inline-add-drawer" style="display: none;">
+          <div class="drawer-header">
+            <span style="font-weight: 600; color: #fff; font-size: 0.8rem;">Enter New Row Values:</span>
+            <div style="display: flex; gap: 0.4rem;">
+              <button class="btn btn-primary btn-xs" id="btn-save-inline-row">✓ Save Row</button>
+              <button class="btn btn-ghost btn-xs" id="btn-cancel-inline-row">Cancel</button>
+            </div>
+          </div>
+          <div class="inline-fields-grid" id="inline-fields-grid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Main Dataset Table -->
+        <div class="table-scroll-container main-table-container">
+          <table class="minimal-table" id="main-data-table">
+            <thead id="main-table-thead">
+              <!-- Headers rendered dynamically -->
+            </thead>
+            <tbody id="main-table-tbody">
+              <!-- Rows rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 3: 🤖 MODELS & EXPERIMENTS                                     -->
+    <!-- =================================================================== -->
+    <section class="view-section" id="view-models" style="display: none;">
+      <div class="section-intro">
+        <div>
+          <h1 class="view-title">Models & Pipeline</h1>
+        </div>
+      </div>
+
+      <!-- Model & Pipeline Config -->
+      <div class="models-config-panel">
+        <span class="config-section-label">1. Select Model</span>
+        <div class="model-cards-grid">
+          <!-- Random Forest Card -->
+          <div class="model-select-card active" id="model-card-rf" data-model="Random Forest">
+            <span class="model-card-icon">🌲</span>
+            <span class="model-card-name">Random Forest</span>
+            <input type="radio" name="model_choice" value="Random Forest" id="radio-rf" checked style="display: none;" />
+          </div>
+
+          <!-- XGBoost Card -->
+          <div class="model-select-card" id="model-card-xgb" data-model="XGBoost">
+            <span class="model-card-icon">⚡</span>
+            <span class="model-card-name">XGBoost</span>
+            <input type="radio" name="model_choice" value="XGBoost" id="radio-xgb" style="display: none;" />
+          </div>
+        </div>
+
+        <!-- Dataset Selection -->
+        <span class="config-section-label" style="margin-top: 1rem;">2. Select Dataset</span>
+        <div class="dataset-config-row">
+          <div class="form-group" style="flex: 1; max-width: 360px;">
+            <select id="model-dataset-select" class="select-input">
+              <option value="packets">packets</option>
+              <option value="early_packets">early_packets</option>
+              <option value="full_features">full_features</option>
+              <option value="fingerprint_features">fingerprint_features</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pipeline Stepper -->
+        <span class="config-section-label" style="margin-top: 1rem;">3. Pipeline</span>
+        <div class="pipeline-stepper">
+          <div class="pipeline-step active" id="pipeline-step-train">
+            <div class="step-circle">1</div>
+            <div class="step-content">
+              <div class="step-header">
+                <h4 class="step-title">Train</h4>
+                <span class="step-status" id="step-status-train">Ready</span>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-pipeline-train">
+                ▶ Train
+              </button>
+            </div>
+          </div>
+
+          <div class="pipeline-step locked" id="pipeline-step-validate">
+            <div class="step-circle">2</div>
+            <div class="step-content">
+              <div class="step-header">
+                <h4 class="step-title">Validate</h4>
+                <span class="step-status" id="step-status-validate">Locked</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-pipeline-validate" disabled>
+                ▶ Validate
+              </button>
+            </div>
+          </div>
+
+          <div class="pipeline-step locked" id="pipeline-step-test">
+            <div class="step-circle">3</div>
+            <div class="step-content">
+              <div class="step-header">
+                <h4 class="step-title">Test</h4>
+                <span class="step-status" id="step-status-test">Locked</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-pipeline-test" disabled>
+                ▶ Test
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compare Both Models -->
+        <div class="models-actions-bar" style="margin-top: 1rem;">
+          <div class="models-run-buttons">
+            <button class="btn btn-secondary btn-sm" id="btn-run-compare-models">
+              ⚖️ Compare Models
+            </button>
+          </div>
+          <div class="models-status-pill" id="models-exec-status">
+            Ready to train
+          </div>
+        </div>
+      </div>
+
+      <!-- Execution Progress Indicator -->
+      <div class="training-progress-box" id="training-progress-box" style="display: none;">
+        <div class="progress-spinner"></div>
+        <span id="training-progress-text">Training model on extracted features...</span>
+      </div>
+
+      <!-- Results Container -->
+      <div class="models-results-container" id="models-results-container">
+
+        <!-- Phase Results Summary -->
+        <div class="phase-results-grid" id="phase-results-grid">
+          <div class="phase-result-card" id="phase-card-train">
+            <div class="phase-card-header">
+              <span class="phase-card-label">Training Metrics</span>
+              <span class="phase-card-badge phase-pending" id="phase-badge-train">Pending</span>
+            </div>
+            <div class="phase-metrics-row" id="phase-metrics-train">
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Accuracy</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Precision</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Recall</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">F1-Score</span></div>
+            </div>
+          </div>
+
+          <div class="phase-result-card" id="phase-card-validate">
+            <div class="phase-card-header">
+              <span class="phase-card-label">Validation Metrics</span>
+              <span class="phase-card-badge phase-pending" id="phase-badge-validate">Pending</span>
+            </div>
+            <div class="phase-metrics-row" id="phase-metrics-validate">
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Accuracy</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Precision</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Recall</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">F1-Score</span></div>
+            </div>
+          </div>
+
+          <div class="phase-result-card" id="phase-card-test">
+            <div class="phase-card-header">
+              <span class="phase-card-label">Test Metrics</span>
+              <span class="phase-card-badge phase-pending" id="phase-badge-test">Pending</span>
+            </div>
+            <div class="phase-metrics-row" id="phase-metrics-test">
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Accuracy</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Precision</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">Recall</span></div>
+              <div class="phase-metric"><span class="pm-val">—</span><span class="pm-label">F1-Score</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparative Benchmark Suite -->
+        <div class="panel-card" id="models-comparison-panel" style="margin-top: 1rem; display: none;">
+          <div class="panel-card-header">
+            <span class="panel-card-title">Model Comparison</span>
+            <span class="panel-card-badge" id="models-compare-badge">2 Models</span>
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="table-scroll-container" style="max-height: 220px;">
+            <table class="minimal-table" id="models-compare-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">Rank</th>
+                  <th>Model</th>
+                  <th style="text-align: right;">Accuracy</th>
+                  <th style="text-align: right;">Precision</th>
+                  <th style="text-align: right;">Recall</th>
+                  <th style="text-align: right;">F1-Score</th>
+                  <th style="text-align: right;">Time</th>
+                </tr>
+              </thead>
+              <tbody id="models-compare-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Comparative Bar Charts -->
+          <div class="compare-charts-grid">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <span class="chart-card-title">Accuracy Comparison</span>
+                <span class="chart-tag">Bar Chart</span>
+              </div>
+              <div class="chart-body" id="chart-compare-acc">
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <span class="chart-card-title">F1-Score Comparison</span>
+                <span class="chart-tag">Bar Chart</span>
+              </div>
+              <div class="chart-body" id="chart-compare-f1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diagnostics Grid -->
+        <div class="dashboard-visual-grid" style="margin-top: 1rem;">
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <span class="panel-card-title">Confusion Matrix</span>
+              <span class="panel-card-badge" id="cm-model-name">—</span>
+            </div>
+            <div class="cm-wrapper" id="confusion-matrix-wrapper">
+              <div class="chart-missing-notice">Run the pipeline to see the confusion matrix.</div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <span class="panel-card-title">Feature Importance</span>
+              <span class="panel-card-badge">Top Features</span>
+            </div>
+            <div class="fi-wrapper" id="feature-importance-wrapper">
+              <div class="chart-missing-notice">Train a model to see feature importances.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

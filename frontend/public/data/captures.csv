@@ -1,0 +1,6 @@
+capture_id,traffic_class,capture_file,network_type,scenario_id,repetition_id,duration,packet_count
+cap_https_web_6dpbhs,HTTPS_WEB,raw/HTTPS_WEB/https_web_wifi_001.pcap,WiFi,scenario_001,1,2.3825,120
+cap_http3_web_yzoyn6,HTTP3_WEB,raw/HTTP3_WEB/http3_web_wifi_001.pcap,WiFi,scenario_002,1,1.9764,110
+cap_doh_k93tyt,DOH,raw/DOH/doh_wifi_001.pcap,WiFi,scenario_003,1,0.3635,8
+cap_doh3_sj6bw3,DOH3,raw/DOH3/doh3_wifi_001.pcap,WiFi,scenario_004,1,0.1242,7
+cap_doq_bntpbn,DOQ,raw/DOQ/doq_wifi_001.pcap,WiFi,scenario_005,1,0.0847,6

@@ -1,0 +1,6 @@
+experiment_id,capture_id,traffic_class,protocol_family,network_type,device_id,scenario_id,repetition_id,capture_date
+exp_39tex8,cap_https_web_6dpbhs,HTTPS_WEB,TCP_TLS,WiFi,device_01,scenario_001,1,2025-03-15
+exp_wudtse,cap_http3_web_yzoyn6,HTTP3_WEB,QUIC,WiFi,device_01,scenario_002,1,2025-03-15
+exp_7d5j60,cap_doh_k93tyt,DOH,TCP_TLS,WiFi,device_01,scenario_003,1,2025-03-15
+exp_bme9fp,cap_doh3_sj6bw3,DOH3,QUIC,WiFi,device_01,scenario_004,1,2025-03-15
+exp_78bmyy,cap_doq_bntpbn,DOQ,QUIC,WiFi,device_01,scenario_005,1,2025-03-15
