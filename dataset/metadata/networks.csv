@@ -1,2 +1,0 @@
-network_id,network_type,environment,bandwidth_mbps,latency_ms,packet_loss_pct
-wifi_campus_01,WiFi,University Campus,100,5,0.1

@@ -1,0 +1,10 @@
+{
+  "name": "encrypted-dns-dataset-backend",
+  "version": "1.0.0",
+  "description": "FastAPI SQLite backend for Encrypted DNS Traffic Fingerprinting",
+  "private": true,
+  "scripts": {
+    "dev": "python3 server.py",
+    "start": "python3 server.py"
+  }
+}

@@ -54,17 +54,7 @@ DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Dataset CSV files to seed on startup
 SEED_FILES = [
-    ("packets",               DATASET_DIR / "packets" / "packets.csv"),
-    ("flows",                 DATASET_DIR / "flows" / "flows.csv"),
-    ("full_features",         DATASET_DIR / "features" / "full_features.csv"),
-    ("fingerprint_features",  DATASET_DIR / "features" / "fingerprint_features.csv"),
-    ("early_packets",         DATASET_DIR / "features" / "early_packets.csv"),
-    ("metadata_captures",     DATASET_DIR / "metadata" / "captures.csv"),
-    ("metadata_experiments",  DATASET_DIR / "metadata" / "experiments.csv"),
-    ("metadata_networks",     DATASET_DIR / "metadata" / "networks.csv"),
-    ("splits_train",          DATASET_DIR / "splits" / "train.csv"),
-    ("splits_validation",     DATASET_DIR / "splits" / "validation.csv"),
-    ("splits_test",           DATASET_DIR / "splits" / "test.csv"),
+    ("dataset", DATASET_DIR / "dataset.csv"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -96,13 +86,18 @@ def _infer_column_type(series: pd.Series) -> str:
     return "TEXT"
 
 
+def _clean_column_name(name: str) -> str:
+    """Clean column name preserving spaces and casing."""
+    return name.strip().replace('"', "")
+
+
 def seed_table(conn: sqlite3.Connection, table_name: str, csv_path: Path) -> int:
     """Create table from CSV if not exists. Return row count loaded."""
     if not csv_path.exists():
         return 0
 
     df = pd.read_csv(csv_path)
-    df.columns = [_safe_table_name(c) for c in df.columns]
+    df.columns = [_clean_column_name(c) for c in df.columns]
     df = df.fillna("")
 
     # Check if table already exists
@@ -444,13 +439,13 @@ SUPPORTED_MODELS = [
 
 class TrainModelRequest(BaseModel):
     model_name: str = Field(default="Random Forest")
-    table_name: str = Field(default="packets")
+    table_name: str = Field(default="dataset")
     test_size: float = Field(default=0.3, ge=0.1, le=0.5)
     random_state: int = Field(default=42)
 
 
 class CompareModelsRequest(BaseModel):
-    table_name: str = Field(default="packets")
+    table_name: str = Field(default="dataset")
     models: list[str] = Field(default_factory=lambda: SUPPORTED_MODELS)
     test_size: float = Field(default=0.3, ge=0.1, le=0.5)
     random_state: int = Field(default=42)
@@ -458,7 +453,7 @@ class CompareModelsRequest(BaseModel):
 
 class PipelineRequest(BaseModel):
     model_name: str = Field(default="Random Forest")
-    table_name: str = Field(default="packets")
+    table_name: str = Field(default="dataset")
     phase: str = Field(default="train")  # 'train' | 'validate' | 'test'
     random_state: int = Field(default=42)
 
@@ -529,12 +524,12 @@ def list_available_models():
         ).fetchall()
         feature_tables = [
             r["name"] for r in tables
-            if any(k in r["name"] for k in ["features", "packets", "flows", "splits"])
+            if any(k in r["name"] for k in ["dataset", "features", "packets", "flows", "splits"])
         ]
 
     return {
         "models": SUPPORTED_MODELS,
-        "recommended_tables": feature_tables or ["packets", "full_features", "fingerprint_features"],
+        "recommended_tables": feature_tables or ["dataset"],
         "classes": ["DOQ", "DOH3", "DOH", "HTTP3_WEB", "HTTPS_WEB"],
     }
 
