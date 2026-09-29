@@ -378,9 +378,13 @@ async function loadFallbackDataset(dsId) {
 
 function updateDatasetDimensions() {
   if (!state.activeDataset) return;
-  activeDatasetName.textContent = state.activeDataset.name;
+  if (activeDatasetName) {
+    activeDatasetName.textContent = state.activeDataset.name || '';
+  }
   const count = state.dbConnected ? state.activeDataset.totalRows : state.activeDataset.rows.length;
-  activeDatasetDim.textContent = `${count.toLocaleString()} rows × ${state.activeDataset.headers.length} columns`;
+  if (activeDatasetDim) {
+    activeDatasetDim.textContent = `${count.toLocaleString()} rows × ${state.activeDataset.headers.length} columns`;
+  }
 }
 
 // ---------------------------------------------------------------------------
