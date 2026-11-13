@@ -1,0 +1,7 @@
+Protocol,Cluster,Number of Test Samples,Correct Predictions,Incorrect Predictions,Accuracy,Error Rate,Recall
+HTTPS,Cluster A,193,186,7,0.9637,0.0363,0.9637
+HTTP/3,Cluster A,207,206,1,0.9952,0.0048,0.9952
+QUIC,Cluster A,0,0,0,,,
+DoH,Cluster B,199,199,0,1.0,0.0,1.0
+DoH/3,Cluster B,50,50,0,1.0,0.0,1.0
+DoQ,Cluster B,41,40,1,0.9756,0.0244,0.9756

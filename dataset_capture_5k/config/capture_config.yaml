@@ -1,0 +1,71 @@
+# Configuration for 5,000 Samples Per Class Encrypted DNS & Web Real-World Capture Pipeline
+project:
+  name: "RM-Encrypted-DNS-RealWorld-Capture-5k"
+  target_samples_per_class: 5000
+  total_target_samples: 30000
+  capture_location:
+    network_id: "AIRTEL_PRAYAGRAJ_LAB"
+    interface_ip: "172.17.246.115"
+    public_ip: "223.189.244.49"
+    isp: "Bharti Airtel Ltd. (AS45609)"
+    city: "Prayagraj"
+    vantage_point: "Prayagraj_Airtel_Tap"
+    geolocation: "Prayagraj, Uttar Pradesh, India (Asia/Kolkata UTC+05:30)"
+
+classes:
+  - name: "DOH"
+    transport: "TCP"
+    port: 443
+    endpoints:
+      - "https://1.1.1.1/dns-query"
+      - "https://dns.google/dns-query"
+      - "https://dns.quad9.net/dns-query"
+      - "https://dns.adguard-dns.com/dns-query"
+
+  - name: "DOQ"
+    transport: "QUIC/UDP"
+    port: 853
+    endpoints:
+      - host: "94.140.14.14"
+        port: 853
+        hostname: "dns.adguard-dns.com"
+      - host: "94.140.15.15"
+        port: 853
+        hostname: "dns-family.adguard-dns.com"
+
+  - name: "DOT"
+    transport: "TCP"
+    port: 853
+    endpoints:
+      - "1.1.1.1"
+      - "8.8.8.8"
+      - "9.9.9.9"
+      - "94.140.14.14"
+
+  - name: "DOH3"
+    transport: "QUIC/UDP"
+    port: 443
+    endpoints:
+      - "https://1.1.1.1/dns-query"
+      - "https://dns.google/dns-query"
+
+  - name: "HTTPS_WEB"
+    transport: "TCP"
+    port: 443
+    endpoints:
+      - "https://www.cloudflare.com"
+      - "https://www.wikipedia.org"
+      - "https://www.github.com"
+      - "https://www.apple.com"
+      - "https://www.mozilla.org"
+      - "https://www.python.org"
+      - "https://www.apache.org"
+
+  - name: "HTTP3_WEB"
+    transport: "QUIC/UDP"
+    port: 443
+    endpoints:
+      - "cloudflare.com"
+      - "google.com"
+      - "facebook.com"
+

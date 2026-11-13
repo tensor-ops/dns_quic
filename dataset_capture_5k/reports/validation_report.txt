@@ -1,0 +1,40 @@
+================================================================================
+     RM ENCRYPTED DNS RESEARCH: 30,000-SAMPLE SCIENTIFIC VALIDATION REPORT
+     Target: 6 Classes × 5,000 Samples = 30,000 Samples
+================================================================================
+[*] Ingested Dataset: dataset_packet_level_30k.csv
+[*] Total Samples: 30,000
+[*] Feature Columns: ['Current packet size', 'Previous packet size', 'Current time gap', 'Previous time gap', 'traffic_class', 'label', 'protocol', 'flow_id', 'direction', 'pcap_file', 'pcap_path', 'capture_location', 'vantage_point']
+
+[Check 1: Class Completeness] Present classes: ['DOH', 'DOH3', 'DOQ', 'DOT', 'HTTP3_WEB', 'HTTPS_WEB']
+  PASSED: All 6 canonical traffic classes are present.
+
+[Check 2: Class Balance & Sample Targets]
+  Class DOH       :  5000 samples | Raw PCAPs:  16 files | Status: PASSED
+  Class DOQ       :  5000 samples | Raw PCAPs:  20 files | Status: PASSED
+  Class DOT       :  5000 samples | Raw PCAPs: 184 files | Status: PASSED
+  Class DOH3      :  5000 samples | Raw PCAPs:  19 files | Status: PASSED
+  Class HTTPS_WEB :  5000 samples | Raw PCAPs: 184 files | Status: PASSED
+  Class HTTP3_WEB :  5000 samples | Raw PCAPs: 261 files | Status: PASSED
+
+[Check 3: PCAP File Existence and Integrity]
+  Total PCAP Files Found: 684
+  Valid Non-Empty PCAP Files: 684
+  PASSED: All raw PCAPs exist on disk with valid headers.
+
+[Check 4: Missing and Null Value Audit]
+  PASSED: Zero missing or null values across all required feature columns.
+  PASSED: Zero infinite numeric values.
+
+[Check 5: Capture Location Metadata Integrity]
+  PASSED: 100% of samples possess verified capture location and PCAP provenance paths.
+
+[Check 6: Label Encoding Consistency]
+  PASSED: Deterministic 1-to-1 mapping between traffic_class and label index.
+
+[Check 7: Zero-Leakage Policy Compliance]
+  PASSED: Zero-Leakage policy satisfied (no IP, port, SNI, ALPN, domain strings).
+
+================================================================================
+OVERALL SCIENTIFIC VALIDATION: PASSED
+================================================================================

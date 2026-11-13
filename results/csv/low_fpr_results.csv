@@ -1,0 +1,19 @@
+Model,Target FPR,Achieved FPR,Threshold,TPR (Recall),Precision
+SVM,1e-02,0.01,0.895137,0.3172,0.9583
+SVM,1e-03,0.0,0.974209,0.2793,1.0
+SVM,1e-04,0.0,0.974209,0.2793,1.0
+Decision Tree,1e-02,0.0,inf,0.0,0.0
+Decision Tree,1e-03,0.0,inf,0.0,0.0
+Decision Tree,1e-04,0.0,inf,0.0,0.0
+Random Forest,1e-02,0.01,0.656667,0.9966,0.9863
+Random Forest,1e-03,0.0,1.0,0.6172,1.0
+Random Forest,1e-04,0.0,1.0,0.6172,1.0
+AdaBoost,1e-02,0.01,0.524461,0.9241,0.9853
+AdaBoost,1e-03,0.0,0.546241,0.8414,1.0
+AdaBoost,1e-04,0.0,0.546241,0.8414,1.0
+Gaussian NB,1e-02,0.0075,0.010428,0.2931,0.9659
+Gaussian NB,1e-03,0.0,0.013863,0.2759,1.0
+Gaussian NB,1e-04,0.0,0.013863,0.2759,1.0
+Logistic Regression,1e-02,0.0075,0.49874,0.5276,0.9808
+Logistic Regression,1e-03,0.0,0.548635,0.4724,1.0
+Logistic Regression,1e-04,0.0,0.548635,0.4724,1.0

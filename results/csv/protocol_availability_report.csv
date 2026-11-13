@@ -1,0 +1,7 @@
+Protocol,Available,Samples,Flows,Dataset Source
+HTTPS,Yes,2000,40,master_final_dataset.csv
+HTTP/3,Yes,2000,40,master_final_dataset.csv
+QUIC,No (MISSING),0,0,MISSING from dataset
+DoH,Yes,1986,126,master_final_dataset.csv
+DoH/3,Yes,452,38,master_final_dataset.csv
+DoQ,Yes,460,45,master_final_dataset.csv

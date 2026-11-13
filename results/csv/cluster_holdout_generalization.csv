@@ -1,0 +1,7 @@
+Model,Held-Out Protocol,Total Samples,Correct (-> Cluster B),Incorrect (-> Cluster A),Accuracy (Zero-Shot)
+SVM,DoH/3,452,444,8,0.9823
+Decision Tree,DoH/3,452,396,56,0.8761
+Random Forest,DoH/3,452,389,63,0.8606
+AdaBoost,DoH/3,452,431,21,0.9535
+Gaussian NB,DoH/3,452,8,444,0.0177
+Logistic Regression,DoH/3,452,144,308,0.3186
