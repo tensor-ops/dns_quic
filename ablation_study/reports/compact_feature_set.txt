@@ -1,18 +1,18 @@
 # Compact Feature Set — Selected from Ablation + Importance Analysis
 # Top-15 features (combined RF+XGB importance rank)
 
-first_500ms_packets  # group=burst_volume
-packet_size_p95  # group=packet_flow
-packet_size_mean  # group=packet_flow
-upstream_burst_count  # group=direction
-mean_burst_duration_ms  # group=burst_volume
-packet_direction_ratio  # group=direction
-packet_size_p99  # group=packet_flow
-packet_size_p90  # group=packet_flow
-byte_count  # group=packet_flow
 packet_size_p75  # group=packet_flow
-first_250ms_packets  # group=burst_volume
-packet_count  # group=packet_flow
-packet_size_p25  # group=packet_flow
-packet_size_std  # group=packet_flow
+packet_size_p99  # group=packet_flow
+downstream_burst_count  # group=direction
+upstream_burst_count  # group=direction
+first_2s_packets  # group=burst_volume
+packet_size_mean  # group=packet_flow
 packet_size_max  # group=packet_flow
+first_250ms_packets  # group=burst_volume
+first_250ms_bytes  # group=burst_volume
+packet_size_p95  # group=packet_flow
+iat_min_ms  # group=timing
+packet_size_min  # group=packet_flow
+packet_size_p90  # group=packet_flow
+first_500ms_bytes  # group=burst_volume
+mean_burst_duration_ms  # group=burst_volume

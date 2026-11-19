@@ -1,13 +1,13 @@
 experiment,model,n_train,n_test,accuracy,f1_macro,f1_weighted
-Within-Network,RF,368,93,0.9892,0.9683,0.9887
-Within-Network,XGB,368,93,0.9892,0.974,0.9886
-Cross-Net (Prayagraj→Tumsar),RF,411,289,0.173,0.1394,0.0965
-Cross-Net (Prayagraj→Tumsar),XGB,411,289,0.1315,0.083,0.0574
-Cross-Net (Tumsar→Prayagraj),RF,289,411,0.1119,0.0705,0.1094
-Cross-Net (Tumsar→Prayagraj),XGB,289,411,0.0365,0.0205,0.004
-Open-World (DNS vs Web),RF,525,225,0.9911,0.9909,0.9911
-Open-World (DNS vs Web),XGB,525,225,0.9822,0.9818,0.9823
+Within-Network,RF,496,124,0.9919,0.9742,0.9914
+Within-Network,XGB,496,124,0.9839,0.9266,0.9833
+Cross-Net (Prayagraj→Tumsar),RF,620,337,0.1929,0.1412,0.107
+Cross-Net (Prayagraj→Tumsar),XGB,620,337,0.3858,0.341,0.3336
+Cross-Net (Tumsar→Prayagraj),RF,337,620,0.3548,0.1457,0.2642
+Cross-Net (Tumsar→Prayagraj),XGB,337,620,0.3613,0.1391,0.2742
+Open-World (DNS vs Web),RF,669,288,1.0,1.0,1.0
+Open-World (DNS vs Web),XGB,669,288,0.9896,0.9869,0.9896
 Final (DoH/DoH3/DoQ) Within-Net,RF,211,53,1.0,1.0,1.0
 Final (DoH/DoH3/DoQ) Within-Net,XGB,211,53,1.0,1.0,1.0
-Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum,RF,55,209,0.2201,0.1608,0.1775
-Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum,XGB,55,209,0.4354,0.5056,0.4103
+Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum,RF,55,209,0.2297,0.1689,0.1857
+Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum,XGB,55,209,0.2297,0.1596,0.149

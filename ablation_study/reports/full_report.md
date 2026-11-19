@@ -1,7 +1,9 @@
 # Encrypted DNS Traffic Intelligence
 ## Feature Importance, Ablation & Robustness — Full Report
 
-**Generated:** 2026-11-17  |  **Dataset:** 35,616 packet-level records → 750 flows
+**Generated:** 2026-11-19  |  **Dataset:** 36,928 packet-level records → 957 flows across Prayagraj & Tumsar
+
+Protocols: DOH, DOQ, DOH3, QUIC, HTTPS_WEB, HTTP3_WEB (DOT removed and replaced with QUIC)
 
 ---
 
@@ -20,18 +22,18 @@
 
 | experiment                             | model   |   n_train |   n_test |   accuracy |   f1_macro |
 |:---------------------------------------|:--------|----------:|---------:|-----------:|-----------:|
-| Within-Network                         | RF      |       368 |       93 |     0.9892 |     0.9683 |
-| Within-Network                         | XGB     |       368 |       93 |     0.9892 |     0.974  |
-| Cross-Net (Prayagraj→Tumsar)           | RF      |       411 |      289 |     0.173  |     0.1394 |
-| Cross-Net (Prayagraj→Tumsar)           | XGB     |       411 |      289 |     0.1315 |     0.083  |
-| Cross-Net (Tumsar→Prayagraj)           | RF      |       289 |      411 |     0.1119 |     0.0705 |
-| Cross-Net (Tumsar→Prayagraj)           | XGB     |       289 |      411 |     0.0365 |     0.0205 |
-| Open-World (DNS vs Web)                | RF      |       525 |      225 |     0.9911 |     0.9909 |
-| Open-World (DNS vs Web)                | XGB     |       525 |      225 |     0.9822 |     0.9818 |
+| Within-Network                         | RF      |       496 |      124 |     0.9919 |     0.9742 |
+| Within-Network                         | XGB     |       496 |      124 |     0.9839 |     0.9266 |
+| Cross-Net (Prayagraj→Tumsar)           | RF      |       620 |      337 |     0.1929 |     0.1412 |
+| Cross-Net (Prayagraj→Tumsar)           | XGB     |       620 |      337 |     0.3858 |     0.341  |
+| Cross-Net (Tumsar→Prayagraj)           | RF      |       337 |      620 |     0.3548 |     0.1457 |
+| Cross-Net (Tumsar→Prayagraj)           | XGB     |       337 |      620 |     0.3613 |     0.1391 |
+| Open-World (DNS vs Web)                | RF      |       669 |      288 |     1      |     1      |
+| Open-World (DNS vs Web)                | XGB     |       669 |      288 |     0.9896 |     0.9869 |
 | Final (DoH/DoH3/DoQ) Within-Net        | RF      |       211 |       53 |     1      |     1      |
 | Final (DoH/DoH3/DoQ) Within-Net        | XGB     |       211 |       53 |     1      |     1      |
-| Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum | RF      |        55 |      209 |     0.2201 |     0.1608 |
-| Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum | XGB     |        55 |      209 |     0.4354 |     0.5056 |
+| Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum | RF      |        55 |      209 |     0.2297 |     0.1689 |
+| Final (DoH/DoH3/DoQ) Cross-Net Pry→Tum | XGB     |        55 |      209 |     0.2297 |     0.1596 |
 
 ---
 

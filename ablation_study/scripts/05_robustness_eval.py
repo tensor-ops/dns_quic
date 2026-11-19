@@ -170,9 +170,9 @@ for model_name in ["RF", "XGB"]:
 #   Train on DNS classes only (DOH, DOT, DOQ, DOH3)
 #   Test on all 6 — web classes (HTTPS_WEB, HTTP3_WEB) → labeled as "Web/Unknown"
 # ═══════════════════════════════════════════════════════════════════════════
-print("\n══ EXP 3: Open-World (DNS vs. HTTPS_WEB / HTTP3_WEB) ══")
-DNS_CLASSES  = {CLASS_MAP["DOH"], CLASS_MAP["DOT"], CLASS_MAP["DOQ"], CLASS_MAP["DOH3"]}
-WEB_CLASSES  = {CLASS_MAP["HTTPS_WEB"], CLASS_MAP["HTTP3_WEB"]}
+print("\n══ EXP 3: Open-World (DNS vs. HTTPS_WEB / HTTP3_WEB / QUIC) ══")
+DNS_CLASSES = {CLASS_MAP["DOH"], CLASS_MAP["DOQ"], CLASS_MAP["DOH3"]}
+BACKGROUND_CLASSES = {CLASS_MAP["HTTPS_WEB"], CLASS_MAP["HTTP3_WEB"], CLASS_MAP["QUIC"]}
 
 # Binary task: Is this encrypted DNS (1) or generic web traffic (0)?
 df_ow = df.copy()
@@ -270,7 +270,8 @@ report_md = os.path.join(REPORTS, "full_report.md")
 with open(report_md, "w") as f:
     f.write("# Encrypted DNS Traffic Intelligence\n")
     f.write("## Feature Importance, Ablation & Robustness — Full Report\n\n")
-    f.write(f"**Generated:** 2026-11-17  |  **Dataset:** 35,616 packet-level records → {len(df)} flows\n\n")
+    f.write(f"**Generated:** 2026-11-19  |  **Dataset:** 36,928 packet-level records → {len(df)} flows across Prayagraj & Tumsar\n\n")
+    f.write("Protocols: DOH, DOQ, DOH3, QUIC, HTTPS_WEB, HTTP3_WEB (DOT removed and replaced with QUIC)\n\n")
     f.write("---\n\n")
     f.write("## 1. Feature Groups Used\n\n")
     f.write("| Group | Features | Count |\n|---|---|---|\n")
