@@ -1,0 +1,16 @@
+Model: Logistic_Regression | Scenario: CROSS_AIRTEL_TRAIN_JIO_TEST
+Train time: 0.13s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.10      0.11      0.11      5000
+         DOQ       0.30      0.22      0.26      3000
+        DOH3       0.02      0.04      0.03      3000
+        QUIC       0.00      0.00      0.00      5000
+   HTTPS_WEB       0.33      0.32      0.32      9000
+   HTTP3_WEB       0.49      0.75      0.59      7000
+
+    accuracy                           0.29     32000
+   macro avg       0.21      0.24      0.22     32000
+weighted avg       0.25      0.29      0.26     32000

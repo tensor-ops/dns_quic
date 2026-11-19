@@ -1,0 +1,17 @@
+Model: Linear_SVM | Scenario: AIRTEL_ONLY
+Train time: 0.42s
+5-Fold CV: 0.3223±0.0154
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.51      0.17      0.25      1556
+         DOQ       0.06      0.00      0.01      1447
+        DOH3       0.27      0.67      0.39      1561
+        QUIC       0.00      0.00      0.00       975
+   HTTPS_WEB       0.37      0.47      0.41      2054
+   HTTP3_WEB       0.24      0.30      0.27      1953
+
+    accuracy                           0.30      9546
+   macro avg       0.24      0.27      0.22      9546
+weighted avg       0.27      0.30      0.25      9546

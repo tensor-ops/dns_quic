@@ -1,0 +1,17 @@
+Model: Random_Forest  |  Scenario: FULL_DATASET
+Train time: 2.91s
+5-Fold CV Accuracy: 0.9228 ± 0.0026
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.97      0.97      0.97      2307
+         DOQ       0.94      0.96      0.95      1896
+        DOH3       0.95      0.87      0.91      2011
+        QUIC       0.86      0.98      0.91      1725
+   HTTPS_WEB       0.97      0.96      0.97      3404
+   HTTP3_WEB       0.96      0.93      0.95      3003
+
+    accuracy                           0.95     14346
+   macro avg       0.94      0.94      0.94     14346
+weighted avg       0.95      0.95      0.95     14346

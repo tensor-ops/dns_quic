@@ -1,0 +1,272 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Masters/Doctoral Thesis 
+% LaTeX Template
+%
+% This template was downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Version 2.x major modifications by:
+% Vel (vel@latextemplates.com)
+%
+% Original Authors:
+% Vel (vel@latextemplates.com)
+% Johannes Böttcher
+% Steve Gunn (http://users.ecs.soton.ac.uk/srg/softwaretools/document/templates/)
+% Sunil Patel (http://www.sunilpatel.co.uk/thesis-template/)
+%
+% This template was modified by Muneendra Ojha to suit the needs of 
+% IIIT Allahabad Students. This is a basic template consisting of all 
+% requirements as approved by the institute. Please feel free to contact
+% if any errors are found or updates needed.
+% 
+% Do not remove this preamble. Always remember to give credits where it is due.
+% 
+% Template license:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+12pt, % The default document font size, options: 10pt, 11pt, 12pt
+oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
+english, % ngerman for German
+singlespacing, % options: singlespacing, onehalfspacing or doublespacing
+%draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
+% nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
+liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
+% toctotoc, % Uncomment to add the main table of contents to the table of contents
+parskip, % Uncomment to add space between paragraphs
+%nohyperref, % Uncomment to not load the hyperref package
+headsepline, % Uncomment to get a line under the header
+% chapterinoneline, % Uncomment to place the chapter title next to the number on one line
+% consistentlayout, % Uncomment to change the layout of the declaration, abstract and acknowledgements pages to match the default layout
+]{Thesis} % The class file specifying the document structure
+
+
+
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{mathpazo} % Use the Palatino font by default
+\usepackage[backend=biber,
+style=numeric,
+bibencoding=utf8,
+% style=authoryear, % if using style as authoryear, then cite the reference using \parencite{}
+% style=reading
+]{biblatex}
+\addbibresource{example.bib} % The filename of the bibliography
+\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+\usepackage{array}% http://ctan.org/pkg/array
+\usepackage{lipsum}
+
+
+
+%----------------------------------------------------------------------------------------
+%	MARGIN SETTINGS
+%----------------------------------------------------------------------------------------
+
+\geometry{
+	paper=a4paper, % Change to letterpaper for US letter
+	inner=20mm, % Inner margin
+	outer=20mm, % Outer margin
+	bindingoffset=5mm, % Binding offset
+	top=25mm, % Top margin
+	bottom=20mm, % Bottom margin
+	%showframe, % Uncomment to show how the type block is set on the page
+}
+
+
+%----------------------------------------------------------------------------------------
+%	★★★ FILL IN YOUR INFORMATION HERE ★★★
+%   THIS IS THE ONLY SECTION YOU NEED TO EDIT!
+%----------------------------------------------------------------------------------------
+
+% ============================================================
+% THESIS DETAILS
+% ============================================================
+\thesistitle{Title of the thesis being submitted}
+\degree{Bachelor of Technology}  % Options: Bachelor of Technology, Master of Technology, Doctor of Philosophy
+
+% ============================================================
+% SUPERVISOR DETAILS
+% ============================================================
+\supervisor{Dr. Supervisor Name}
+
+% ============================================================
+% STUDENT 1 DETAILS (Required - at least one student)
+% ============================================================
+\newcommand{\studentonename}{Student - 1}
+\newcommand{\studentoneroll}{IIT2021001}
+
+% ============================================================
+% STUDENT 2 DETAILS (Optional - comment out if only 1 student)
+% ============================================================
+\newcommand{\studenttwoname}{Student - 2}
+\newcommand{\studenttworoll}{IIT2021002}
+
+% ============================================================
+% STUDENT 3 DETAILS (Optional - comment out if only 2 students)
+% ============================================================
+\newcommand{\studentthreename}{Student - 3}
+\newcommand{\studentthreeroll}{IIT2021003}
+
+% ============================================================
+% DEPARTMENT & UNIVERSITY (Usually don't need to change)
+% ============================================================
+\department{Department of Information Technology}
+\university{Indian Institute of Information Technology, Allahabad}
+\subject{Information Technology}
+
+% ============================================================
+% HELPER COMMANDS - DO NOT EDIT BELOW THIS LINE
+% These automatically format the student information
+% ============================================================
+
+% Format for title page (with line breaks)
+\newcommand{\studentnamesformatted}{%
+\studentonename%
+\ifdefined\studenttwoname%
+\\\studenttwoname%
+\fi%
+\ifdefined\studentthreename%
+\\\studentthreename%
+\fi%
+}
+
+\newcommand{\rollnumbersformatted}{%
+\studentoneroll%
+\ifdefined\studenttworoll%
+\\\studenttworoll%
+\fi%
+\ifdefined\studentthreeroll%
+\\\studentthreeroll%
+\fi%
+}
+
+% Format for certificate (comma separated)
+\newcommand{\studentnamescomma}{%
+\studentonename%
+\ifdefined\studenttwoname%
+, \studenttwoname%
+\fi%
+\ifdefined\studentthreename%
+, \studentthreename%
+\fi%
+}
+
+% Format for declaration (with roll numbers)
+\newcommand{\studentnamesdeclaration}{%
+\studentonename{} (\studentoneroll)%
+\ifdefined\studenttwoname%
+, \studenttwoname{} (\studenttworoll)%
+\fi%
+\ifdefined\studentthreename%
+, and \studentthreename{} (\studentthreeroll)%
+\fi%
+}
+
+% Format for signatures
+\newcommand{\studentsignatures}{%
+\studentonename{} (\studentoneroll)%
+\ifdefined\studenttwoname%
+\\\studenttwoname{} (\studenttworoll)%
+\fi%
+\ifdefined\studentthreename%
+\\\studentthreename{} (\studentthreeroll)%
+\fi%
+}
+
+% Pronoun selection (I/We)
+\newcommand{\pronounwe}{%
+\ifdefined\studenttwoname%
+We%
+\else%
+I%
+\fi%
+}
+
+\newcommand{\pronounus}{%
+\ifdefined\studenttwoname%
+us%
+\else%
+me%
+\fi%
+}
+
+% Legacy compatibility
+\firstauthor{\studentnamesformatted}
+\enrollmentnumber{\rollnumbersformatted}
+
+% ============================================================
+% END OF USER CONFIGURATION
+% ============================================================
+
+\examiner{} 
+\addresses{} 
+\keywords{} 
+\faculty{Faculty Name}
+
+
+
+\AtBeginDocument{
+\hypersetup{pdftitle=\ttitle} % Set the PDF's title to your title
+% \hypersetup{pdfauthor=\authorname} % Set the PDF's author to your name
+\hypersetup{pdfkeywords=\keywordnames} % Set the PDF's keywords to your keywords
+}
+
+
+\begin{document}
+\begin{sloppypar}
+
+%----------------------------------------------------------------------------------------
+%	FRONT CONTENT
+%----------------------------------------------------------------------------------------
+
+\include{frontmatter}
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - CHAPTERS
+%----------------------------------------------------------------------------------------
+
+\mainmatter % Begin numeric (1,2,3...) page numbering
+
+\pagestyle{thesis} % Return the page headers back to the "thesis" style
+\begin{spacing}{2}
+    
+
+% Include the chapters of the thesis as separate files from the Chapters folder
+% Uncomment the lines as you write the chapters
+
+\include{Chapters/1_introduction}
+\include{Chapters/2_literature}
+\include{Chapters/3_methods}
+%\include{Chapters/Chapter4} 
+%\include{Chapters/Chapter5} 
+
+\end{spacing}
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - APPENDICES
+%----------------------------------------------------------------------------------------
+
+\appendix % Cue to tell LaTeX that the following "chapters" are Appendices
+
+% Include the appendices of the thesis as separate files from the Appendices folder
+% Uncomment the lines as you write the Appendices
+
+\include{Appendices/AppendixA}
+%\include{Appendices/AppendixB}
+%\include{Appendices/AppendixC}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+\printbibliography[heading=bibintoc]
+
+%----------------------------------------------------------------------------------------
+\end{sloppypar}
+\end{document}  

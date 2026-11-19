@@ -1,0 +1,17 @@
+Model: KNN  |  Scenario: JIO_ONLY
+Train time: 0.01s
+5-Fold CV Accuracy: 0.9247 ± 0.0017
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       1.00      1.00      1.00       750
+         DOQ       0.99      0.99      0.99       450
+        DOH3       1.00      0.76      0.86       450
+        QUIC       0.99      0.73      0.84       750
+   HTTPS_WEB       1.00      1.00      1.00      1350
+   HTTP3_WEB       0.77      1.00      0.87      1050
+
+    accuracy                           0.93      4800
+   macro avg       0.96      0.91      0.93      4800
+weighted avg       0.95      0.93      0.93      4800

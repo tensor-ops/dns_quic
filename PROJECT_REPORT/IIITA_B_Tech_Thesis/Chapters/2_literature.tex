@@ -1,0 +1,44 @@
+% Chapter 2
+
+\chapter{Literature Review} % Main chapter title
+
+\label{Chapter2} % For referencing the chapter elsewhere, use \ref{Chapter2} 
+
+
+%----------------------------------------------------------------------------------------
+% \addchaptertocentry{ABSTRACT}
+% \begin{center}
+%     {\centering\large\bfseries ABSTRACT}
+% \end{center}
+
+% \addcontentsline{toc}{section}{\protect\numberline{}Abstract}
+This chapter provides a thorough survey of the problems identified in the field of EMO. In addition, a number of challenges were identified in the previous chapter which forms the basic motivation of research towards solving a multiobjective optimization problem using evolutionary algorithm. Chapter starts with introduction of Decision Maker in section \ref{sec1} wherein DM brings EMO closer to MCDM and thus a thorough survey of hybrid EMO-MCDM methods has been provided in Section \ref{selection}. Finally, a brief discussion of quality metrics has been added to evaluate quality of a proposed EMO followed by a list of complex and well-studied standard multiobjective benchmark test problem in sections \ref{lackof} and \ref{expincrease} respectively. 
+
+% \newpage
+
+%----------------------------------------------------------------------------------------
+
+
+
+\begin{spacing}{1} 
+% If headings continue to second line then force them to appear in single spacing mode.
+    \section{Challenges of Evolutionary Multiobjective Optimization}\label{sec1}
+\end{spacing}
+
+\subsection{Lack of Selection Pressure}\label{selection}
+
+Although there does not exist a quantifiable definition for selection pressure however it can be defined as the extent of emphasis given to above-average solution in a selection operator \cite{3blue1brown}. It is considered as the number of copies allocated to the population-best solution by the selection operator. The difficulties in producing new candidate solutions that will dominate poorly performing but locally nondominated solutions were identified in \cite{Acosta2019}. This concept was later termed as dominance resistance (DR) \cite{Ali2021}. Similar observation were made in \cite{Alimamy2018} where authors reported that level of dominance resistance could increase with an increase in dimension of objective space. The definition of DR was later extended in \cite{Anjum2024}, [34] to refer to high proportions of locally nondominated solutions in any population.  \par
+
+
+\subsection{Exponential Increase in Number of Solutions}\label{expincrease}
+The second difficulty encountered by EMO techniques is the exponential increase in number solutions required to represent the objective functions. Suppose 10 solutions are required to sufficiently represent the values attained by an objective on the Pareto front. For a 2-objective MOP the number of solutions required will be $10^2=100$; for 3-objective problem this count increases to $10^3=1000$. If $N$ solutions are required to represent an objective then total number of solutions required for M-objective problem will be $N^M$. \par
+
+To deal with such a gigantic requirement, many algorithms incorporate preference based methods \cite{Bouteraa2024,Dai2023,Bjork2006}. Preference information is used to incorporate the knowledge of DM and restrict the generation of solutions to a limited part of the global Pareto front \cite{Yang2022} called Region of Interest (ROI). With the introduction of a DM, the difference between the field of multiple criteria decision making (MCDM), and multiobjective optimization problem (MOP) blurs. It is normally assumed that a DM makes the choice for final solutions from a set of Pareto optimal solutions based on his/her preferences. 
+
+\section{Lack of Visualization Methods}\label{lackof}
+The task of visualization is to enable the DM to view objective vectors (multidimensional alternatives) and to facilitate preference comparisons. The alternatives may be presented one at a time, two at a time, or many at a time for the DM’s consideration [61]. However the important problem is to provide a method, with which one could obtain a holistic view of the Pareto optimal set. This is diﬃcult in more than two or three dimensions in the objective space. \par
+
+\subsection{Totally useless section}\label{useless}
+Researchers working on MCDM/EMO problems have shown great interest in graphical techniques to provide the DM with holistic information. These techniques help obtain a quick overall view of the relevant information, as well as detailed information for evaluation and comparison purposes. In statistics, the reduction of the dimensionality of a problem is a widely used technique to compress the information in multivariate data. If the number of objectives in the multiobjective context can be reduced to two (or three) without losing the essential information, then the data may be examined visually \cite{Uttal2013}. \par
+
+Principal component analysis and Multi-Dimensional Scaling (MDS) are also interesting from the point of view of MCDM. Thus if dimensionality of the overall problem can be reduced, it can lead to better result in other difficulties related to the MOP \cite{Troussas2023, Voronina2019}. Further in contrast to reducing number of objective functions for solving the MOP, certain visualization methods map the high dimensional objective vector onto low dimensional vector space for visualization \cite{VanLehn2005}. However there is a need to develop advanced techniques, which help DMs evaluate and compare alternatives characterized by multiple objectives where there are tens of objectives.

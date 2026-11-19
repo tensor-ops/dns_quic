@@ -1,0 +1,16 @@
+Model: Random_Forest  |  Scenario: CROSS_JIO_TRAIN_AIRTEL_TEST
+Train time: 0.51s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.14      0.30      0.19     10377
+         DOQ       0.29      0.28      0.29      9642
+        DOH3       0.36      0.03      0.06     10405
+        QUIC       0.01      0.00      0.00      6501
+   HTTPS_WEB       0.43      0.87      0.58     13692
+   HTTP3_WEB       0.65      0.11      0.19     13021
+
+    accuracy                           0.31     63638
+   macro avg       0.31      0.27      0.22     63638
+weighted avg       0.35      0.31      0.25     63638

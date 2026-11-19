@@ -1,0 +1,16 @@
+Model: MLP | Scenario: CROSS_AIRTEL_TRAIN_JIO_TEST
+Train time: 51.09s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.43      0.81      0.56      5000
+         DOQ       0.13      0.31      0.19      3000
+        DOH3       0.01      0.02      0.02      3000
+        QUIC       0.00      0.00      0.00      5000
+   HTTPS_WEB       0.63      0.46      0.53      9000
+   HTTP3_WEB       0.91      0.63      0.75      7000
+
+    accuracy                           0.43     32000
+   macro avg       0.35      0.37      0.34     32000
+weighted avg       0.46      0.43      0.42     32000

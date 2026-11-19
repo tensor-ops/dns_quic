@@ -1,0 +1,17 @@
+Model: XGBoost  |  Scenario: RATIO_DATASET
+Train time: 2.07s
+5-Fold CV Accuracy: 0.9286 ± 0.0027
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.97      0.95      0.96      1200
+         DOQ       0.94      0.93      0.94       600
+        DOH3       0.94      0.84      0.89       600
+        QUIC       0.91      0.84      0.88       300
+   HTTPS_WEB       0.96      0.98      0.97      2400
+   HTTP3_WEB       0.90      0.97      0.93      1200
+
+    accuracy                           0.95      6300
+   macro avg       0.94      0.92      0.93      6300
+weighted avg       0.95      0.95      0.95      6300

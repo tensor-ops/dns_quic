@@ -1,0 +1,17 @@
+Model: MLP | Scenario: AIRTEL_ONLY
+Train time: 35.63s
+5-Fold CV: 0.6927±0.0125
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.86      0.77      0.82      1556
+         DOQ       0.67      0.70      0.69      1447
+        DOH3       0.63      0.73      0.68      1561
+        QUIC       0.83      0.78      0.80       975
+   HTTPS_WEB       0.86      0.91      0.89      2054
+   HTTP3_WEB       0.85      0.76      0.80      1953
+
+    accuracy                           0.78      9546
+   macro avg       0.79      0.78      0.78      9546
+weighted avg       0.79      0.78      0.78      9546

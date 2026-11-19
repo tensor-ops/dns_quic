@@ -1,0 +1,16 @@
+Model: KNN  |  Scenario: CROSS_AIRTEL_TRAIN_JIO_TEST
+Train time: 0.02s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.52      0.37      0.43      5000
+         DOQ       0.57      0.35      0.44      3000
+        DOH3       0.23      0.74      0.35      3000
+        QUIC       0.01      0.00      0.00      5000
+   HTTPS_WEB       0.57      0.50      0.53      9000
+   HTTP3_WEB       0.57      0.73      0.64      7000
+
+    accuracy                           0.46     32000
+   macro avg       0.41      0.45      0.40     32000
+weighted avg       0.44      0.46      0.43     32000

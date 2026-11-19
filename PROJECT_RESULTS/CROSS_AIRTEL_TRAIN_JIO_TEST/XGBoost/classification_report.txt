@@ -1,0 +1,16 @@
+Model: XGBoost  |  Scenario: CROSS_AIRTEL_TRAIN_JIO_TEST
+Train time: 2.50s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.27      0.44      0.33      5000
+         DOQ       0.24      0.42      0.31      3000
+        DOH3       0.09      0.19      0.12      3000
+        QUIC       0.00      0.00      0.00      5000
+   HTTPS_WEB       0.63      0.44      0.52      9000
+   HTTP3_WEB       0.72      0.64      0.68      7000
+
+    accuracy                           0.39     32000
+   macro avg       0.33      0.36      0.33     32000
+weighted avg       0.41      0.39      0.39     32000

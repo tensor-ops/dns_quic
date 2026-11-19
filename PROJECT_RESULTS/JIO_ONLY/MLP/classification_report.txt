@@ -1,0 +1,17 @@
+Model: MLP | Scenario: JIO_ONLY
+Train time: 9.26s
+5-Fold CV: 0.9281±0.0093
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       1.00      0.99      1.00       750
+         DOQ       1.00      0.96      0.98       450
+        DOH3       0.99      0.75      0.85       450
+        QUIC       0.75      1.00      0.86       750
+   HTTPS_WEB       1.00      1.00      1.00      1350
+   HTTP3_WEB       1.00      0.89      0.94      1050
+
+    accuracy                           0.95      4800
+   macro avg       0.96      0.93      0.94      4800
+weighted avg       0.96      0.95      0.95      4800

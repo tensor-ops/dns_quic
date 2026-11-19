@@ -1,0 +1,17 @@
+Model: Decision_Tree  |  Scenario: AIRTEL_ONLY
+Train time: 0.17s
+5-Fold CV Accuracy: 0.8885 ± 0.0034
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.92      0.94      0.93      1556
+         DOQ       0.90      0.91      0.90      1447
+        DOH3       0.91      0.91      0.91      1561
+        QUIC       0.94      0.94      0.94       975
+   HTTPS_WEB       0.92      0.91      0.91      2054
+   HTTP3_WEB       0.92      0.92      0.92      1953
+
+    accuracy                           0.92      9546
+   macro avg       0.92      0.92      0.92      9546
+weighted avg       0.92      0.92      0.92      9546

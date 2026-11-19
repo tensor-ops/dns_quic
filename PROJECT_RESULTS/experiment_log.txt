@@ -1,0 +1,96 @@
+Loading datasets...
+Ratio dataset: 42,000 rows | {'HTTPS_WEB': 16000, 'DOH': 8000, 'HTTP3_WEB': 8000, 'DOQ': 4000, 'DOH3': 4000, 'QUIC': 2000}
+
+Full: 95,638  JIO: 32,000  Airtel: 63,638  Ratio: 42,000
+
+Building dataset info...
+
+         dataset  total_rows   DOH   DOQ  DOH3  QUIC  HTTPS_WEB  HTTP3_WEB  null_count
+   FULL_COMBINED       95638 15377 12642 13405 11501      22692      20021           0
+    JIO_COMBINED       32000  5000  3000  3000  5000       9000       7000           0
+ AIRTEL_COMBINED       63638 10377  9642 10405  6501      13692      13021           0
+   PRAYAGRAJ_JIO       26000  4000  2000  2000  4000       8000       6000           0
+   TUMSAR_AIRTEL        8399  1986   460   452  1501       2000       2000           0
+    MIRZAPUR_JIO        6000  1000  1000  1000  1000       1000       1000           0
+PRAYAGRAJ_AIRTEL       55239  8391  9182  9953  5000      11692      11021           0
+   RATIO_DATASET       42000  8000  4000  4000  2000      16000       8000           0
+Dataset info saved.
+
+============================================================
+SCENARIO: FULL_DATASET
+  Train: 66,946  Val: 14,346  Test: 14,346
+  → Random_Forest
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:359: UserWarning: resource_tracker: There appear to be 1 leaked file objects to clean up at shutdown
+  warnings.warn(
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:359: UserWarning: resource_tracker: There appear to be 16 leaked semlock objects to clean up at shutdown
+  warnings.warn(
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:359: UserWarning: resource_tracker: There appear to be 35 leaked folder objects to clean up at shutdown
+  warnings.warn(
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_a1b6c66abe494f5f87cf34321dab98ba: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_1aa4fed3bc5c40e89f63faf0c866b6ce_88d5c1bfdf664a97bc99b95d90ec0903: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_bcfd1955597a4725b394f19c0ce44eb3_8544741aac994a97ad25a2809d063009: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_a13389505427484c8e13f300a79b0709_80f08fd172b44272b32ff57e19b23d34: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_37de8cfb7dec42ef84aea1b17c685cdb_bf90eb5a4b77444498ece2f90d1c22d5: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_cb95a5d38a734b8d9616c6423c2d3e0b_3b65683ca5574c4fae7ade7a696085cf: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_158256d3c6114ea0b2a330f2d16c6592_1955e54be8a54358b6f532f8aa644108: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_5a39683034da4d3c8c9bddbfce080bbb_b9399981c5dc479f979afe2de3eada0a: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_d285f7ae6ad74860b40d544d05ddcb70: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_2138ad0fc9184db38577290c04aced4e_3598ef3d45e0473381f909ebd40375b0: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_19f7ea42e74f4c578e923d1cb4741d71: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_6ee70a3147ba46e3a508155503d6a7be_04a30b1dced74c938c2e9163088aa972: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_4439166b865943978d5656767e8844d1: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_f474f18af2d2493b92f7e116e018bb24_fbaaba0d48f447059f602fb14342b1ad: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_60ba88b2011f4b67ac035efbb6c62228: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_b64aec68d1a24c55b49c896563f76e3d_9ad9aa8d2b574351ab246d385b69d743: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_d6dda102f57348ec89aa6a5cca616376: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_35a9672014b645b797d1fe28803b0ba0_94e3dc675b27486c93d41e24d513aa6f: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_27bcf1ca68434d1ba7a40bcff833da53: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_e61ac1027b7d4acaad51c1e3157f8452_77a77f79ed0048caa74a0e8e5aca075e: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c3149049d42b40c9ad3c7b78509de560_ca4bd4802fc74b5cb3f578aedff8ceb1: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_684aef6afc6f459aa5e46938229a401b_02e57faea3964bb7a9490d5167544131: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_db027ef3aad44722a0c38d3e7fdcc906_837fc33b3d8e4f179d81769205822b64: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_af95bb001e92494999e63e2f0788c340_1bfed32c585f418e827deb6ce26cf26d: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_79695b8961de4e328e6b095b5cb87bcc_e553ebf596c449b0868ba558231e56cc: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_b98d043d525b4d42bec3d30a581f1980_06d0f184a8f6450c99a5eddf655ddb4a: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_650bc7d7b1a749c487bb758bd40d6e4e_a5a864862de444ae805ead717f19ed65: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_0193bf58e3d3463b871c2360c8a4e590_5fc92f2bd8ad417a80e19c78f042a3b8: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_883a0dd7db9248de8423e8fb6e743939_fd019fb292964fc6a9d9aacfa688c6ff: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_37dd09cc203d430195cf56a75bc7e48c_50f6c4eb4c784deab9b1c17be311451a: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_c8cb2b1573de4a8faba7c44e30aef592_5aff26f4fe774528a4c503256849b4df: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_f0fbc2c1e17243d989448d2c9c102496_71ea6f07a577444cb93b94e23c9d75d3: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_9a9ca473a5cb4895867de0af4350486a_99e860a3c8b44eb69282daea6a6804fd: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")
+/Users/paru/.pyenv/versions/3.11.15/lib/python3.11/site-packages/joblib/externals/loky/backend/resource_tracker.py:375: UserWarning: resource_tracker: /var/folders/nk/kc0j6lh15qjf6x0gcgxq7kzc0000gn/T/joblib_memmapping_folder_80299_f8857b86d6d840ea8a2490f66bb69948_e72b74bee09d4423a954fe67be25601a: FileNotFoundError(2, 'No such file or directory')
+  warnings.warn(f"resource_tracker: {name}: {e!r}")

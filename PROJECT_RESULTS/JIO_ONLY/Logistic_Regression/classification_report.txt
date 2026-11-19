@@ -1,0 +1,17 @@
+Model: Logistic_Regression | Scenario: JIO_ONLY
+Train time: 0.07s
+5-Fold CV: 0.3034±0.0104
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.51      0.81      0.62       750
+         DOQ       0.00      0.00      0.00       450
+        DOH3       0.00      0.00      0.00       450
+        QUIC       0.19      0.02      0.04       750
+   HTTPS_WEB       0.21      0.46      0.29      1350
+   HTTP3_WEB       0.11      0.06      0.08      1050
+
+    accuracy                           0.27      4800
+   macro avg       0.17      0.22      0.17      4800
+weighted avg       0.19      0.27      0.20      4800

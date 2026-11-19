@@ -1,0 +1,17 @@
+Model: KNN  |  Scenario: AIRTEL_ONLY
+Train time: 0.02s
+5-Fold CV Accuracy: 0.8803 ± 0.0025
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.91      0.93      0.92      1556
+         DOQ       0.91      0.88      0.90      1447
+        DOH3       0.88      0.93      0.91      1561
+        QUIC       0.94      0.95      0.95       975
+   HTTPS_WEB       0.91      0.90      0.91      2054
+   HTTP3_WEB       0.93      0.90      0.92      1953
+
+    accuracy                           0.91      9546
+   macro avg       0.91      0.92      0.92      9546
+weighted avg       0.91      0.91      0.91      9546

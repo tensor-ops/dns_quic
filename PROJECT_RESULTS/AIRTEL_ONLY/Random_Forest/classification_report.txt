@@ -1,0 +1,17 @@
+Model: Random_Forest  |  Scenario: AIRTEL_ONLY
+Train time: 1.91s
+5-Fold CV Accuracy: 0.9225 ± 0.0044
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.94      0.96      0.95      1556
+         DOQ       0.92      0.94      0.93      1447
+        DOH3       0.93      0.93      0.93      1561
+        QUIC       0.97      0.96      0.96       975
+   HTTPS_WEB       0.94      0.92      0.93      2054
+   HTTP3_WEB       0.94      0.94      0.94      1953
+
+    accuracy                           0.94      9546
+   macro avg       0.94      0.94      0.94      9546
+weighted avg       0.94      0.94      0.94      9546

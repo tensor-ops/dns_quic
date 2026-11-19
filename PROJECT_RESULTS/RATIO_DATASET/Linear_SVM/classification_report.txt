@@ -1,0 +1,17 @@
+Model: Linear_SVM | Scenario: RATIO_DATASET
+Train time: 0.27s
+5-Fold CV: 0.3831±0.0002
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.00      0.00      0.00      1200
+         DOQ       0.00      0.00      0.00       600
+        DOH3       0.00      0.00      0.00       600
+        QUIC       0.00      0.00      0.00       300
+   HTTPS_WEB       0.38      1.00      0.55      2400
+   HTTP3_WEB       0.00      0.00      0.00      1200
+
+    accuracy                           0.38      6300
+   macro avg       0.06      0.17      0.09      6300
+weighted avg       0.15      0.38      0.21      6300

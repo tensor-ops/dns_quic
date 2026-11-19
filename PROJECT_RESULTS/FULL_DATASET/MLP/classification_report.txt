@@ -1,0 +1,17 @@
+Model: MLP | Scenario: FULL_DATASET
+Train time: 47.85s
+5-Fold CV: 0.6857±0.0377
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.91      0.88      0.89      2307
+         DOQ       0.77      0.75      0.76      1896
+        DOH3       0.79      0.71      0.75      2011
+        QUIC       0.77      0.88      0.82      1725
+   HTTPS_WEB       0.92      0.94      0.93      3404
+   HTTP3_WEB       0.85      0.87      0.86      3003
+
+    accuracy                           0.85     14346
+   macro avg       0.84      0.84      0.84     14346
+weighted avg       0.85      0.85      0.85     14346

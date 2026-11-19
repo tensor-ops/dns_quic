@@ -1,0 +1,17 @@
+Model: Decision_Tree  |  Scenario: RATIO_DATASET
+Train time: 0.10s
+5-Fold CV Accuracy: 0.9049 ± 0.0026
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.94      0.93      0.94      1200
+         DOQ       0.92      0.91      0.91       600
+        DOH3       0.91      0.83      0.87       600
+        QUIC       0.91      0.85      0.88       300
+   HTTPS_WEB       0.95      0.96      0.96      2400
+   HTTP3_WEB       0.88      0.94      0.91      1200
+
+    accuracy                           0.93      6300
+   macro avg       0.92      0.90      0.91      6300
+weighted avg       0.93      0.93      0.93      6300

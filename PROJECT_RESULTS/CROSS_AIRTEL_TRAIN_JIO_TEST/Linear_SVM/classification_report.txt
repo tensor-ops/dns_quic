@@ -1,0 +1,16 @@
+Model: Linear_SVM | Scenario: CROSS_AIRTEL_TRAIN_JIO_TEST
+Train time: 0.52s
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.17      0.24      0.20      5000
+         DOQ       0.68      0.11      0.19      3000
+        DOH3       0.06      0.12      0.08      3000
+        QUIC       0.00      0.00      0.00      5000
+   HTTPS_WEB       0.38      0.51      0.44      9000
+   HTTP3_WEB       0.51      0.52      0.52      7000
+
+    accuracy                           0.32     32000
+   macro avg       0.30      0.25      0.24     32000
+weighted avg       0.32      0.32      0.29     32000

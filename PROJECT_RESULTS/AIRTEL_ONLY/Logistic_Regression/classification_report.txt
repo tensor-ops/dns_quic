@@ -1,0 +1,17 @@
+Model: Logistic_Regression | Scenario: AIRTEL_ONLY
+Train time: 0.11s
+5-Fold CV: 0.3407±0.0046
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.46      0.10      0.17      1556
+         DOQ       0.09      0.02      0.03      1447
+        DOH3       0.28      0.78      0.42      1561
+        QUIC       0.31      0.03      0.06       975
+   HTTPS_WEB       0.40      0.29      0.34      2054
+   HTTP3_WEB       0.41      0.63      0.50      1953
+
+    accuracy                           0.34      9546
+   macro avg       0.32      0.31      0.25      9546
+weighted avg       0.34      0.34      0.28      9546

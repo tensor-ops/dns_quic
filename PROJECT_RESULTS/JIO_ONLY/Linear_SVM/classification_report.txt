@@ -1,0 +1,17 @@
+Model: Linear_SVM | Scenario: JIO_ONLY
+Train time: 0.23s
+5-Fold CV: 0.3295±0.0038
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.52      0.82      0.63       750
+         DOQ       0.00      0.00      0.00       450
+        DOH3       0.00      0.00      0.00       450
+        QUIC       0.17      0.01      0.03       750
+   HTTPS_WEB       0.27      0.70      0.39      1350
+   HTTP3_WEB       0.32      0.04      0.07      1050
+
+    accuracy                           0.33      4800
+   macro avg       0.21      0.26      0.19      4800
+weighted avg       0.25      0.33      0.23      4800

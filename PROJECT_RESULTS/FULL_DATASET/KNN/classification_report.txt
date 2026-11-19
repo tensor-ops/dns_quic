@@ -1,0 +1,17 @@
+Model: KNN  |  Scenario: FULL_DATASET
+Train time: 0.02s
+5-Fold CV Accuracy: 0.8847 ± 0.0043
+
+--- TEST SET ---
+              precision    recall  f1-score   support
+
+         DOH       0.95      0.94      0.95      2307
+         DOQ       0.91      0.93      0.92      1896
+        DOH3       0.80      0.91      0.85      2011
+        QUIC       0.92      0.82      0.87      1725
+   HTTPS_WEB       0.94      0.94      0.94      3404
+   HTTP3_WEB       0.93      0.89      0.91      3003
+
+    accuracy                           0.91     14346
+   macro avg       0.91      0.91      0.91     14346
+weighted avg       0.91      0.91      0.91     14346
