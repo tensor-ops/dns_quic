@@ -1,0 +1,16 @@
+feature,mean_abs_shap
+mean_burst_duration_ms,0.8142534
+first_500ms_packets,0.4905419
+packet_size_p95,0.43129224
+packet_size_mean,0.40780962
+packet_size_p99,0.3914337
+packet_size_p25,0.27344567
+upstream_burst_count,0.18664652
+byte_count,0.18543412
+packet_count,0.16465342
+packet_size_p90,0.16454509
+packet_size_p75,0.12537201
+first_250ms_packets,0.12221896
+packet_direction_ratio,0.11789926
+packet_size_max,0.1019316
+packet_size_std,0.064711265

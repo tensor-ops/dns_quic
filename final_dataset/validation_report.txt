@@ -1,0 +1,26 @@
+FINAL COMBINED DATASET — VALIDATION REPORT
+Generated : 2026-11-19  20:02 IST
+
+File      : /Users/paru/paru/projects/RM/final_dataset/final_combined_dataset.csv
+Shape     : 36928 rows × 13 cols
+
+CLASS DISTRIBUTION
+  label=0  DOH             6169 samples
+  label=1  DOQ             5427 samples
+  label=2  DOH3            5426 samples
+  label=3  QUIC            6267 samples
+  label=4  HTTPS_WEB       6817 samples
+  label=5  HTTP3_WEB       6822 samples
+
+  TOTAL : 36928 (DOT completely eliminated; replaced with QUIC)
+
+VANTAGE POINT BREAKDOWN
+traffic_class          DOH  DOH3   DOQ  HTTP3_WEB  HTTPS_WEB  QUIC
+vantage_point                                                     
+Prayagraj_Airtel_Tap  4984  4983  4987       4822       4819  4803
+Tumsar_Docker_Tap     1185   443   440       2000       1998  1464
+
+Missing values : None
+Exact dups     : 0
+Label check    : PASS (0: DOH, 1: DOQ, 2: DOH3, 3: QUIC, 4: HTTPS_WEB, 5: HTTP3_WEB)
+PCAP Traces    : Verified on disk for all classes including QUIC

@@ -1,0 +1,87 @@
+feature_groups:
+  packet_flow:
+    description: "Packet and flow volume features"
+    columns:
+      - packet_count
+      - byte_count
+      - duration_ms
+      - packets_per_sec
+      - bytes_per_sec
+      - packet_size_mean
+      - packet_size_std
+      - packet_size_min
+      - packet_size_max
+      - packet_size_median
+      - packet_size_p25
+      - packet_size_p75
+      - packet_size_p90
+      - packet_size_p95
+      - packet_size_p99
+
+  timing:
+    description: "Inter-arrival time and flow timing features"
+    columns:
+      - iat_mean_ms
+      - iat_std_ms
+      - iat_min_ms
+      - iat_max_ms
+      - iat_median_ms
+      - iat_p25_ms
+      - iat_p75_ms
+      - iat_p90_ms
+      - iat_p95_ms
+      - iat_p99_ms
+
+  direction:
+    description: "Uplink/downlink asymmetry and direction features"
+    columns:
+      - upstream_packets
+      - downstream_packets
+      - packet_direction_ratio
+      - upstream_bytes
+      - downstream_bytes
+      - byte_direction_ratio
+      - upstream_burst_count
+      - downstream_burst_count
+
+  burst_volume:
+    description: "Burst behaviour and temporal volume features"
+    columns:
+      - burst_count
+      - mean_burst_size
+      - maximum_burst_size
+      - minimum_burst_size
+      - mean_burst_duration_ms
+      - maximum_burst_duration_ms
+      - first_100ms_packets
+      - first_100ms_bytes
+      - first_250ms_packets
+      - first_250ms_bytes
+      - first_500ms_packets
+      - first_500ms_bytes
+      - first_1s_packets
+      - first_1s_bytes
+      - first_2s_packets
+      - first_2s_bytes
+      - first_3s_packets
+      - first_3s_bytes
+      - first_5s_packets
+      - first_5s_bytes
+      - first_10s_packets
+      - first_10s_bytes
+
+label_col: label
+class_col: traffic_class
+vantage_col: vantage_point
+
+classes:
+  DOH: 0
+  DOQ: 1
+  DOH3: 2
+  QUIC: 3
+  HTTPS_WEB: 4
+  HTTP3_WEB: 5
+
+vantage_points:
+  prayagraj: "Prayagraj_Airtel_Tap"
+  tumsar: "Tumsar_Docker_Tap"

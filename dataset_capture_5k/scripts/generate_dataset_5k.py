@@ -17,7 +17,7 @@ BASE_DIR = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from capture_dot import run_dot_capture
+from capture_quic import run_quic_capture
 from capture_doh import run_doh_capture
 from capture_doq import run_doq_capture
 from capture_doh3 import run_doh3_capture
@@ -40,9 +40,9 @@ def run_pipeline_5k(samples_per_class: int = 5000, base_dir: Path = BASE_DIR):
     # 1. Packet Captures
     print("\n[PHASE 1/3] Generating Legitimate Network Traffic & Capturing Real PCAPs...")
 
-    # Class 1: DOT
-    print("\n>>> Capturing Class 1: DOT (DNS-over-TLS, TCP 853)")
-    run_dot_capture(target_samples=samples_per_class, output_dir=str(captures_dir / "DOT"))
+    # Class 1: QUIC
+    print("\n>>> Capturing Class 1: QUIC (RFC 9000 QUIC Transport, UDP 443/853)")
+    run_quic_capture(target_samples=samples_per_class, output_dir=str(captures_dir / "QUIC"))
 
     # Class 2: DOH
     print("\n>>> Capturing Class 2: DOH (DNS-over-HTTPS, TCP 443)")

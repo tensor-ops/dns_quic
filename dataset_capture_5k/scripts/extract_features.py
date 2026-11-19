@@ -26,13 +26,13 @@ if str(SCRIPT_DIR) not in sys.path:
 from ml.data.pcap_extractor import PcapFeatureExtractor
 from common import CAPTURE_LOCATION_INFO
 
-CLASSES = ["DOH", "DOQ", "DOT", "DOH3", "HTTPS_WEB", "HTTP3_WEB"]
+CLASSES = ["DOH", "DOQ", "DOH3", "QUIC", "HTTPS_WEB", "HTTP3_WEB"]
 
 CLASS_MAP = {
     "DOH": 0,
     "DOQ": 1,
-    "DOT": 2,
-    "DOH3": 3,
+    "DOH3": 2,
+    "QUIC": 3,
     "HTTPS_WEB": 4,
     "HTTP3_WEB": 5,
 }
@@ -40,8 +40,8 @@ CLASS_MAP = {
 CLASS_PROTOCOL = {
     "DOH": "TCP",
     "DOQ": "QUIC",
-    "DOT": "TCP",
     "DOH3": "QUIC",
+    "QUIC": "QUIC",
     "HTTPS_WEB": "TCP",
     "HTTP3_WEB": "QUIC",
 }
